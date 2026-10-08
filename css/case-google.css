@@ -1,0 +1,22 @@
+/* ===== Google Internship (Figma 336:29453): the theme and the photo dump's positions. Everything else is css/case-study.css. ===== */
+:root { --theme: #4889f4; --grad-a: #a6c7ff; --grad-b: #4285f4; --cover-a: #d7e6ff; --cover-b: #4285f4; --hl: #dbe7ff; }
+/* the photo dump, piece by piece: each at its unrotated place and size in the 1544 x 730 canvas, turned about its centre as in the file; the blob
+   and arch pictures clipped with the file's mask shapes and traced by its outlines; --speed is the piece's share of the scroll drift */
+.p-gem { --speed: 1.5; left: calc(910 * var(--u)); top: 0; width: calc(88 * var(--u)); height: calc(88 * var(--u)); filter: drop-shadow(0 4px 14px rgba(89,133,255,.35)); }
+.p-192 { --speed: .8; left: calc(1099.1 * var(--u)); top: calc(46.1 * var(--u)); width: calc(403.6 * var(--u)); height: calc(403.6 * var(--u)); transform: translate3d(0, var(--py, 0px), 0) rotate(5.32deg); }
+.p-192 .clip { -webkit-mask-image: url(../images/google/mask-blob-192.svg); mask-image: url(../images/google/mask-blob-192.svg); }
+.p-192 .clip img { left: -4.3%; top: -41.3%; width: 100.1%; height: 133.5%; }
+.p-192 .outline { left: -1.53%; top: -1.53%; width: 103.06%; height: 103.06%; }
+.p-659 { --speed: 1.1; left: calc(383.8 * var(--u)); top: calc(45.1 * var(--u)); width: calc(395 * var(--u)); height: calc(581.1 * var(--u)); transform: translate3d(0, var(--py, 0px), 0) rotate(-5.67deg); box-shadow: 14px 21px 20px rgba(0,0,0,.25); }
+.p-659 img { height: 120.83%; margin-top: -14.31%; }
+.p-811 { --speed: .6; left: calc(884.3 * var(--u)); top: calc(104.1 * var(--u)); width: calc(352.3 * var(--u)); height: calc(596.1 * var(--u)); }
+.p-811 .clip { -webkit-mask-image: url(../images/google/mask-arch-811.svg); mask-image: url(../images/google/mask-arch-811.svg); }
+.p-811 .clip img { left: -1.4%; top: .4%; width: 126%; height: 99.2%; }
+.p-811 .outline { left: 0; top: 0; width: 100%; height: 100%; }
+.p-029 { --speed: 1.3; left: calc(103.2 * var(--u)); top: calc(233.9 * var(--u)); width: calc(297.8 * var(--u)); height: calc(336.9 * var(--u)); transform: translate3d(0, var(--py, 0px), 0) rotate(14.49deg); }
+.p-029 img { height: 117.86%; margin-top: -14.34%; }
+.p-930 { --speed: .9; left: calc(822.4 * var(--u)); top: calc(341.7 * var(--u)); width: calc(287.4 * var(--u)); height: calc(287.4 * var(--u)); transform: translate3d(0, var(--py, 0px), 0) rotate(17.19deg); }
+.p-930 .clip { -webkit-mask-image: url(../images/google/mask-blob-930.svg); mask-image: url(../images/google/mask-blob-930.svg); }
+.p-930 .clip img { left: -6%; top: -54%; width: 140%; height: 168%; transform: rotate(6.68deg); }   /* the pot in the middle of the blob, the hand at its foot */
+.p-930 .outline { left: -2.35%; top: -2.35%; width: 104.7%; height: 104.7%; }
+.p-icon { --speed: 1.7; left: calc(356.2 * var(--u)); top: calc(583.4 * var(--u)); width: calc(112 * var(--u)); height: calc(111 * var(--u)); border-radius: calc(36 * var(--u)); transform: translate3d(0, var(--py, 0px), 0) rotate(-11.9deg); }

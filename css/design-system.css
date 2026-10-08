@@ -1,0 +1,148 @@
+/* ===== Design system page (design-system/index.html): documents the tokens the site uses; everything rendered here comes from the live stylesheets ===== */
+body.ds-page { --ds-line: #e6e6e6; --ds-text: #3a3a3a; --ds-soft: #f5f5f5; }
+.ds-hero { padding-bottom: 0; }
+.ds-hero .ds-eyebrow { display: block; margin: 0 0 22px; font-size: 12px; line-height: 16px; font-weight: 500; color: var(--sub); letter-spacing: .02em; }
+.ds-hero .work-sub { max-width: 60ch; }
+.ds-body { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 56px; padding: clamp(56px, 6vw, 110px) var(--gutter) 0; }
+.ds-rail { position: sticky; top: 84px; align-self: start; font-size: 13px; }
+.ds-rail ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+.ds-rail a { display: flex; gap: 10px; font-weight: 500; color: var(--sub); transition: color .25s; }
+.ds-rail a i { font-style: normal; font-weight: 400; font-variant-numeric: tabular-nums; }
+.ds-rail a.is-on { color: #000; }
+.ds-rail .ds-rail-note { margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--ds-line); font-size: 12px; line-height: 1.5; color: var(--sub); }
+.ds-section { padding: 0 0 clamp(64px, 7vw, 120px); scroll-margin-top: 84px; }
+.ds-section > .ds-label { display: inline-block; font-size: 12px; line-height: 16px; font-weight: 500; padding: 6px 15px; border-radius: 22px; background: var(--pill); color: var(--accent); }
+.ds-section > h2 { margin: 16px 0 12px; font-size: clamp(24px, 2.2vw, 34px); line-height: 1.25; font-weight: 500; letter-spacing: -.005em; color: #000; text-wrap: balance; }
+.ds-section > h2 .ac { font-family: Ppeditorialold, "PP Editorial Old", serif; font-style: italic; font-weight: 400; color: var(--accent); }
+.ds-section > p, .ds-note { font-size: 16px; line-height: 1.55; color: var(--ds-text); max-width: 68ch; margin: 0 0 12px; }
+.ds-section h3 { margin: 40px 0 12px; font-size: 17px; font-weight: 500; color: #000; }
+.ds-section h3 small { font-weight: 400; color: var(--sub); margin-left: 8px; }
+.ds-section code, .ds-t code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .88em; background: #f2f2f2; padding: 2px 6px; border-radius: 6px; color: #000; white-space: nowrap; }
+/* principles */
+.ds-principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 22px; }
+.ds-principle { border: 1px solid var(--ds-line); border-radius: 20px; padding: 20px 22px 22px; }
+.ds-principle b { display: block; font-weight: 500; font-size: 17px; margin-bottom: 8px; }
+.ds-principle b .ac { font-family: Ppeditorialold, "PP Editorial Old", serif; font-style: italic; font-weight: 400; color: var(--accent); }
+.ds-principle p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ds-text); }
+/* swatches */
+.ds-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; margin-top: 18px; }
+.ds-swatch { border: 1px solid var(--ds-line); border-radius: 18px; overflow: hidden; }
+.ds-swatch .chip { height: 96px; }
+.ds-swatch .chip.glass { background: rgba(0,0,0,.05); -webkit-backdrop-filter: blur(10px) saturate(1.15); backdrop-filter: blur(10px) saturate(1.15); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+.ds-swatch .info { padding: 12px 14px 14px; font-size: 13px; line-height: 1.45; }
+.ds-swatch .info b { display: block; font-weight: 500; color: #000; }
+.ds-swatch .info code { font-size: 12px; }
+.ds-swatch .info span { display: block; color: var(--sub); margin-top: 4px; }
+.ds-gradient-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+.ds-gradient-row .chip { height: 120px; border-radius: 18px; }
+/* type */
+.ds-face { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; padding: 22px 0; border-top: 1px solid var(--ds-line); align-items: start; }
+.ds-face:last-of-type { border-bottom: 1px solid var(--ds-line); }
+.ds-face .who { font-size: 13px; line-height: 1.5; color: var(--sub); } .ds-face .who b { display: block; font-weight: 500; color: #000; }
+.ds-face .sample { font-size: clamp(30px, 3.4vw, 54px); line-height: 1.12; letter-spacing: -.005em; color: #000; margin: 0; text-wrap: balance; overflow-wrap: anywhere; }
+.ds-face .sample.book { font-family: Ppneuemontreal, "PP Neue Montreal", sans-serif; font-weight: 400; }
+.ds-face .sample.medium { font-family: Ppneuemontreal, "PP Neue Montreal", sans-serif; font-weight: 500; }
+.ds-face .sample.italic { font-family: Ppeditorialold, "PP Editorial Old", serif; font-style: italic; font-weight: 400; color: var(--accent); }
+.ds-face .sample.regular { font-family: Ppeditorialold, "PP Editorial Old", serif; font-weight: 400; }
+.ds-face .sample.ui { font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-weight: 600; }
+.ds-face .sample.mono { font-family: Inconsolata, ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace; font-weight: 600; letter-spacing: 0; }
+.ds-face .glyphs { margin: 10px 0 0; font-size: 15px; color: var(--ds-text); letter-spacing: .01em; overflow-wrap: anywhere; }
+.ds-scale .row { display: grid; grid-template-columns: 170px minmax(0, 1fr) 260px; gap: 20px; align-items: baseline; padding: 18px 0; border-top: 1px solid var(--ds-line); }
+.ds-scale .row:last-child { border-bottom: 1px solid var(--ds-line); }
+.ds-scale .row .k { font-size: 13px; color: var(--sub); } .ds-scale .row .k b { display: block; font-weight: 500; color: #000; }
+.ds-scale .row .v { font-size: 12px; line-height: 1.5; color: var(--ds-text); font-variant-numeric: tabular-nums; }
+.ds-scale .spec { margin: 0; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ds-scale .spec.hero { font-family: Ppneuemontreal, "PP Neue Montreal", sans-serif; font-weight: 500; color: var(--hero); font-size: clamp(26px, 2.5434vw, 66px); line-height: 1.3636; }
+.ds-scale .spec.hero .ac { font-family: Ppeditorialold, "PP Editorial Old", serif; font-style: italic; font-weight: 400; color: var(--accent); }
+.ds-scale .spec.sub { font-weight: 500; font-size: clamp(15px, 1.3873vw, 36px); line-height: 1.3333; color: var(--sub); opacity: .8; }
+.ds-scale .spec.tab { font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-weight: 500; font-size: 12px; line-height: 16px; }
+.ds-scale .spec.brand { font-size: 14px; line-height: 18px; letter-spacing: .2px; } .ds-scale .spec.brand .name { font-family: Ppeditorialold, "PP Editorial Old", serif; font-style: italic; }
+.ds-scale .spec.ct { font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-weight: 600; font-size: 22px; line-height: 20px; }
+.ds-scale .spec.cs { font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-weight: 500; font-size: 15px; line-height: 18px; opacity: .8; }
+.ds-scale .spec.chrome { font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Ppneuemontreal, sans-serif; font-weight: 500; font-size: 12px; line-height: 16px; }
+.ds-scale .spec.chrome .pin { display: inline-block; padding: 6px 15px; border-radius: 22px; background: var(--pill); margin-right: 10px; }
+.ds-scale .spec.chrome .pin.on { background: #000; color: #fff; }
+.ds-scale .spec.chrome .foot { color: #545454; margin-left: 18px; }
+.ds-scale .spec.body { font-size: 17px; line-height: 1.55; color: #3a3a3a; white-space: normal; }
+.ds-scale .spec.label { font-size: 11px; line-height: 16px; letter-spacing: .07em; text-transform: uppercase; color: var(--sub); font-weight: 500; }
+.ds-scale .spec.h2 { font-weight: 500; font-size: clamp(22px, 2.2vw, 32px); line-height: 1.25; }
+/* tables */
+.ds-twrap { overflow-x: auto; margin-top: 14px; }
+.ds-t { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
+.ds-t th { text-align: left; font-weight: 500; font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--sub); padding: 10px 12px 8px; border-bottom: 1px solid var(--ds-line); }
+.ds-t td { padding: 11px 12px; border-bottom: 1px solid var(--ds-line); vertical-align: top; color: var(--ds-text); line-height: 1.45; }
+.ds-t td:first-child { color: #000; font-weight: 500; white-space: nowrap; }
+.ds-t td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ds-t .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: -1px; margin-right: 6px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+/* shape & shadow */
+.ds-shapes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; margin-top: 18px; }
+.ds-shape { display: grid; gap: 12px; }
+.ds-shape .box { height: 150px; background: var(--card); }
+.ds-shape .box.card { border-radius: 40px; border: 2px solid rgba(255,255,255,.6); box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 14.7px -1px rgba(0,0,0,.18), 0 8px 24px -8px rgba(0,0,0,.06), inset 0 0 17.3px 0 rgba(255,255,255,.4); }
+.ds-shape .box.card-hover { border-radius: 40px; border: 2px solid rgba(255,255,255,.6); transform: translateY(-6px) scale(1.025); box-shadow: 0 2px 4px rgba(0,0,0,.05), 0 12px 24px -4px rgba(0,0,0,.12), 0 32px 64px -8px rgba(0,0,0,.20), inset 0 0 17.3px 0 rgba(255,255,255,.4); }
+.ds-shape .box.pill { height: 44px; border-radius: 50px; background: rgba(0,0,0,.05); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); align-self: center; }
+.ds-shape .box.tab { height: 28px; width: 92px; border-radius: 22px; background: #000; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+.ds-shape .box.fish { width: 68.8px; height: 68.8px; background: #000; border: 2.62px solid #fff; border-radius: 20.96px; box-shadow: 2.62px 5.24px 4.19px 0 rgba(0,0,0,.25); transform: rotate(7.35deg); margin: 30px 0 0 12px; }
+.ds-shape .box.media { border-radius: 28px; }
+.ds-shape .box.dark { border-radius: 28px; background: #161616; }
+.ds-shape small { font-size: 12px; line-height: 1.5; color: var(--sub); } .ds-shape small b { display: block; font-weight: 500; color: #000; }
+/* blur demo */
+.ds-blur { position: relative; height: 260px; border-radius: 28px; overflow: hidden; background: #ececec url("../images/covers/r1c2.png") center / cover; margin-top: 18px; }
+.ds-blur .band { position: absolute; left: 0; right: 0; bottom: 0; height: 86px; }
+.ds-blur .band::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(255,255,255,.2), rgba(255,255,255,0)); }
+.ds-blur .band i { position: absolute; inset: 0; }
+.ds-blur .band i:nth-child(1) { -webkit-backdrop-filter: blur(3.55px); backdrop-filter: blur(3.55px); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, #000 25%, #000 50%, rgba(0,0,0,0) 75%); mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, #000 25%, #000 50%, rgba(0,0,0,0) 75%); }
+.ds-blur .band i:nth-child(2) { -webkit-backdrop-filter: blur(6.15px); backdrop-filter: blur(6.15px); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 25%, #000 50%, #000 75%, rgba(0,0,0,0) 100%); mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 25%, #000 50%, #000 75%, rgba(0,0,0,0) 100%); }
+.ds-blur .band i:nth-child(3) { -webkit-backdrop-filter: blur(8.7px); backdrop-filter: blur(8.7px); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 50%, #000 75%, #000 100%); mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 50%, #000 75%, #000 100%); }
+.ds-blur .band i:nth-child(4) { -webkit-backdrop-filter: blur(11.2px); backdrop-filter: blur(11.2px); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 70%, #000 100%); mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 70%, #000 100%); }
+.ds-blur .cap { position: absolute; left: 25px; bottom: 26px; font-size: 12px; color: #fff; }
+/* motion */
+.ds-ease { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 18px; }
+.ds-ease .curve { border: 1px solid var(--ds-line); border-radius: 18px; padding: 16px 18px; }
+.ds-ease svg { width: 100%; height: auto; display: block; }
+.ds-ease b { display: block; font-weight: 500; font-size: 14px; margin-top: 10px; }
+.ds-ease small { display: block; font-size: 12px; color: var(--sub); line-height: 1.5; }
+.ds-ease code { font-size: 11px; }
+/* components */
+.ds-demo { border: 1px solid var(--ds-line); border-radius: 24px; padding: 28px; margin-top: 18px; background: #fff; position: relative; overflow: hidden; }
+.ds-demo.grey { background: var(--ds-soft); }
+.ds-demo .cap { font-size: 12px; color: var(--sub); margin-top: 16px; }
+.ds-demo .gnav.gnav-demo { position: static; pointer-events: auto; }
+html.has-ink body.ds-page .gnav.gnav-demo, html.has-ink body.ds-page .gnav.gnav-demo a, html.has-ink body.ds-page .gnav.gnav-demo .gnav-pill, html.has-ink body.ds-page .gnav.gnav-demo .gnav-tab { color: var(--gn-ink, #000); }
+html.has-ink body.ds-page .gnav.gnav-demo a.is-active { color: #fff; }
+html.has-ink body.ds-page .gnav.gnav-demo .gnav-tab--icon svg { fill: currentColor; }
+html.has-ink body.ds-page .gnav.gnav-demo .gnav-brand img { opacity: 1; }
+.ds-demo .gnav.gnav-demo .gnav-tabs { position: static; transform: none; }
+.ds-pills { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ds-pills .pill { display: inline-flex; align-items: center; height: 28px; padding: 6px 15px; border-radius: 22px; background: var(--pill); color: var(--accent); font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; font-weight: 500; font-size: 12px; line-height: 16px; }
+.ds-pills .pill.on { background: #000; color: #fff; }
+.ds-stage { position: relative; overflow: visible; }
+.ds-stage-inner { position: relative; width: 1213px; height: 500px; transform-origin: 0 0; }
+.ds-stage-inner .work-card { top: 0; }
+.ds-anatomy { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px 24px; margin-top: 18px; font-size: 14px; line-height: 1.5; color: var(--ds-text); }
+.ds-anatomy b { display: block; font-weight: 500; color: #000; }
+.ds-art-wrap { position: relative; overflow: hidden; background: #fff; margin-top: 18px; border-radius: 18px; border: 1px solid var(--ds-line); }
+.ds-art-wrap .foot-art { position: absolute; left: 0; top: 0; margin: 0; transform-origin: 0 0; transform: scale(var(--foot-kx, 1), var(--foot-ky, 1));
+  font-family: Inconsolata, ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace; font-weight: 600; font-variant-ligatures: none;
+  font-size: 13.934px; line-height: 12.563px; letter-spacing: 0; color: #858585; white-space: pre; cursor: text; }
+.ds-art-wrap .foot-art .m { color: #ababab; } .ds-art-wrap .foot-art .d { color: #d9d9d9; }
+.ds-tones { display: flex; gap: 10px; margin-top: 12px; font-size: 12px; color: var(--sub); }
+.ds-tones i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 6px; }
+/* footer row on this page, same as the Work page */
+.foot-row { position: fixed; z-index: 1001; left: var(--gutter, 30px); right: var(--gutter, 30px); bottom: clamp(10px, 0.9827vw, 26px); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; margin: 0; pointer-events: none;
+  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Ppneuemontreal, sans-serif; font-weight: 500; font-size: 12px; line-height: 16px; color: #545454; }
+.foot-row > * { white-space: nowrap; pointer-events: auto; }
+.foot-row > :nth-child(2) { text-align: center; } .foot-row > :nth-child(3) { text-align: right; justify-self: end; }
+.foot-row a { color: inherit; text-decoration: none; }
+@supports (mix-blend-mode: difference) { .foot-row { color: #fff; mix-blend-mode: difference; } .foot-row a:hover { color: #fff; opacity: .65; } }
+.ds-end { padding: 40px var(--gutter) 90px; }
+@media (max-width: 860px) {
+  .ds-body { grid-template-columns: 1fr; gap: 24px; }
+  .ds-rail { position: sticky; top: 56px; z-index: 5; background: rgba(255,255,255,.9); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); padding: 10px 0; }
+  .ds-rail ol { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; } .ds-rail .ds-rail-note { display: none; }
+  .ds-face { grid-template-columns: 1fr; gap: 10px; }
+  .ds-scale .row { grid-template-columns: 1fr; gap: 6px; }
+  .ds-gradient-row { grid-template-columns: 1fr; }
+  .foot-row { position: static; grid-template-columns: 1fr; gap: 0; padding: 14px var(--gutter, 16px) 22px; text-align: center; background: #fff; color: #545454; mix-blend-mode: normal; }
+  .foot-row > :nth-child(3) { text-align: center; justify-self: center; }
+}

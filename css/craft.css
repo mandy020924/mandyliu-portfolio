@@ -1,0 +1,65 @@
+/* ===== Craft and About. No Figma for these: they are set in the Work page's language, its header (css/work.css for the tokens, the type and the
+   fish tile; css/hero-in.css + js/hero-in.js for the entrance), its card, its pills, the shared footer. ===== */
+
+/* ---- entrance (as the case studies' sections): a block arrives when it scrolls into view, up or down ---- */
+.sec { opacity: 0; filter: blur(14px); transform: translateY(var(--dy, 14px)) scale(1.03); transform-origin: 50% 40%; }
+.sec.is-in { animation: secIn 1s cubic-bezier(.22, .61, .36, 1) var(--d, 0ms) both; }
+@keyframes secIn { 0% { opacity: 0; filter: blur(14px); transform: translateY(var(--dy, 14px)) scale(1.03); } 60% { opacity: 1; filter: blur(2px); } 100% { opacity: 1; filter: blur(0); transform: none; } }
+@media (prefers-reduced-motion: reduce) { .sec { opacity: 1; filter: none; transform: none; animation: none !important; } }
+
+/* ---- the pieces: at the Work canvas's cap (1730) with its 40px gaps, under the header where the canvas would start. They pack rather than line
+        up (the script gives each its share of 8px rows, the grid fills the gaps), at 5, 7 or 12 of 12 columns, so the field reads as a loose
+        arrangement, as the canvas does. A piece is a card in the Work card's dress, quieter in its shadow, holding the piece's own tile (the
+        exports carry their #f5f5f5 panel), and, as the Work card, its banner comes up on hover: name, a line, its tags, over the card's frosted
+        foot. The arrival is the canvas's: close, large and out of focus, falling back into place. ---- */
+.craft { max-width: var(--canvas-max-w, 1730px); margin: clamp(72px, 9.1329 * var(--vw), 237px) auto 0; padding: 0 var(--gutter, 30px); box-sizing: border-box; --gap: clamp(16px, 2.3vw, 40px); --r: clamp(20px, 2.3vw, 40px); }
+.craft-grid { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: 4px; grid-auto-flow: row dense; column-gap: var(--gap); row-gap: 0; align-items: start; }
+.piece { grid-column: span var(--span, 6); min-width: 0; padding-bottom: var(--gap); --t: #000; --s: #545454; }   /* the gap below is the piece's own, so the 4px rows leave no slack */
+.piece .tile { position: relative; display: block; border-radius: var(--r); overflow: hidden; background: #f5f5f5; color: inherit; text-decoration: none; transform-origin: 50% 60%;
+  box-shadow: 0 1px 2px rgba(0,0,0,.03), 0 4px 14px -4px rgba(0,0,0,.07); transition: transform .6s ease, box-shadow .8s ease; }
+.piece .tile img { display: block; width: 100%; height: auto; }
+.piece .tile.bleed { aspect-ratio: var(--ar, 3336 / 1100); } .piece .tile.bleed img { position: absolute; inset: -1.5%; width: 103%; height: 103%; object-fit: cover; }   /* a screenshot with square white corners: a touch larger, so the card's corners cut them */
+.piece .tile:hover { transform: translateY(-4px) scale(1.012); transition: transform .5s cubic-bezier(.22, 1, .36, 1), box-shadow .7s cubic-bezier(.22, 1, .36, 1) .04s;
+  box-shadow: 0 2px 4px rgba(0,0,0,.03), 0 14px 34px -10px rgba(0,0,0,.14); }
+/* the banner (css/work.css draws it: the four bands of blur, the row, the text that lifts in); here it answers the tile's hover, the pale veil is
+   a little stronger over the pale tiles, and the lines may wrap */
+.piece .card-blur::before { background: linear-gradient(to top, rgba(245,245,245,.9), rgba(245,245,245,0)); }
+.piece .tile:hover .card-blur::before, .piece .tile:hover .card-blur i { opacity: 1; }
+.piece .tile:hover .card-text, .piece .tile:hover .card-row > .tags { opacity: 1; transform: translateY(0); }
+.piece .card-meta { align-items: flex-end; }
+.piece .card-row { width: 100%; justify-content: space-between; align-items: flex-end; gap: 24px; }   /* name and line at the left, the tags at the right */
+.piece .card-text { gap: 6px; flex: 1 1 auto; }
+.piece .card-row > .tags { flex: none; justify-content: flex-end; max-width: 40%; opacity: 0; transform: translateY(6px); transition: opacity .4s ease, transform .55s cubic-bezier(.22, 1, .36, 1); }
+@media (hover: none) { .piece .card-row > .tags { opacity: 1; transform: none; } }
+.piece .card-title { font-size: 20px; line-height: 24px; white-space: normal; }
+.piece .card-title .arrow { font-size: .85em; margin-left: .15em; }
+.piece .card-sub { white-space: normal; line-height: 19px; max-width: 72ch; text-wrap: pretty; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.tags li { height: 24px; padding: 4px 10px; box-sizing: border-box; border-radius: 22px; font-family: var(--ui-font); font-weight: 500; font-size: 12px; line-height: 16px; white-space: nowrap; color: var(--ink);
+  background: rgba(0,0,0,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.3); }
+/* arrival: the canvas's near-to-far (tools/canvas/index.template.html), for the pieces in reach of the first screen */
+.piece.sec.near { transform-origin: 50% 50%; animation: cardNear var(--in-ms, 1300ms) cubic-bezier(.16, 1, .3, 1) var(--in-delay, 0ms) both; }
+@keyframes cardNear { from { transform: translate3d(var(--in-x, 0px), var(--in-y, 600px), 0) scale(var(--in-k, 2)); opacity: 0; filter: blur(var(--in-focus, 10px)); } 12% { opacity: 1; } 55% { filter: blur(calc(var(--in-focus, 10px) * .3)); } to { transform: none; opacity: 1; filter: blur(0); } }
+@media (prefers-reduced-motion: reduce) { .piece.sec.near { animation: none; } }
+
+/* ---- About: one heading, centred; under it the photo at the left in the card's dress and the story at the right in the subtitle's voice ---- */
+.about-page .work-hero { text-align: center; }
+.about-page .hero-title { margin: 0 auto; max-width: 30em; text-wrap: balance; }
+.about-body { max-width: var(--canvas-max-w, 1730px); margin: clamp(72px, 9.1329 * var(--vw), 237px) auto 0; padding: 0 var(--gutter, 30px); box-sizing: border-box; --r: clamp(20px, 2.3vw, 40px);
+  display: grid; grid-template-columns: minmax(260px, 440px) minmax(0, 1fr); gap: clamp(32px, 4.5vw, 96px); align-items: start; }
+.about-photo { margin: 0; border-radius: var(--r); overflow: hidden; background: #ededed; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 14.7px -1px rgba(0,0,0,.18), 0 8px 24px -8px rgba(0,0,0,.06); }
+.about-photo img { display: block; width: 100%; height: auto; }
+.about-story { max-width: 30em; font-weight: 500; font-size: calc(26px * var(--step, 1)); line-height: 1.3; color: #545454; }
+.about-story p { margin: 0 0 .9em; text-wrap: pretty; }
+.about-story .ac { font-family: Ppeditorialold, "PP Editorial Old", serif; font-style: italic; font-weight: 400; color: var(--ink); }
+.about-story .end { color: var(--sub, #989898); }
+
+/* the footer, as under the Work grid */
+.craft-page .site-foot { margin-top: 0; }   /* the last row's own gap is the room above the drawing */
+.about-page .site-foot { margin-top: clamp(64px, 6vw, 120px); }
+
+@media (max-width: 1023px) {
+  .craft-grid { column-gap: 20px; } .piece { grid-column: 1 / -1; padding-bottom: 20px; }
+  .about-body { grid-template-columns: 1fr; gap: 36px; } .about-photo { max-width: 440px; }
+}
+@media (max-width: 767px) { .craft, .about-body { padding: 0 20px; margin-top: 48px; } .about-story { font-size: 20px; } }

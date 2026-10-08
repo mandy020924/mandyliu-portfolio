@@ -1,0 +1,70 @@
+/* ---------- Minimal top nav (original Webflow markup, quieter styling) ---------- */
+.navbar { display: block !important; z-index: 20 !important; padding: 12px 22px 0 !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+.navbar .container-nav, .navbar .container1 { display: block !important; margin: 0 !important; padding: 0 !important; background: transparent !important; z-index: auto !important; }
+.navbar .nav-menu-flex { align-items: center; }
+.navbar .logo { padding: 6px 0 !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; flex-flow: row !important; align-self: center !important; }
+.navbar .logo img { height: 14px !important; width: auto !important; display: block; }
+.navbar .logo img.hide { display: none; }
+.navbar .list-nav-1 { padding: 0 !important; gap: 2px; line-height: 1 !important; }
+.navbar .link { font-family: Ppneuemontreal, "PP Neue Montreal", sans-serif !important; font-size: 13px !important; font-weight: 400 !important;
+  letter-spacing: -0.1px; line-height: 1 !important; background: transparent !important; border-radius: 0 !important;
+  padding: 8px 9px !important; margin: 0 !important; text-decoration: none; transition: none; }
+html.fx-ready .navbar .link, html.fx-ready .navbar .link-block-3 { transition: color .2s ease; }
+.navbar .link.end { padding-right: 0 !important; }
+.navbar .link-block-3 { display: flex; align-items: center; padding: 0 6px; transition: none; }
+.navbar .rl-social-icon-3 { width: 15px !important; height: 15px !important; color: inherit !important; }
+.navbar .rl-social-icon-3 svg { width: 15px; height: 15px; display: block; }
+/* light pages */
+html[data-nav-theme="light"] .navbar .link, html[data-nav-theme="light"] .navbar .link-block-3 { color: #7a7a7a !important; }
+html[data-nav-theme="light"] .navbar .link:hover, html[data-nav-theme="light"] .navbar .link.w--current,
+html[data-nav-theme="light"] .navbar .link-block-3:hover { color: #111 !important; }
+/* dark pages */
+html[data-nav-theme="dark"] .navbar .link, html[data-nav-theme="dark"] .navbar .link-block-3 { color: rgba(255,255,255,.66) !important; }
+html[data-nav-theme="dark"] .navbar .link:hover, html[data-nav-theme="dark"] .navbar .link.w--current,
+html[data-nav-theme="dark"] .navbar .link-block-3:hover { color: #fff !important; }
+html[data-nav-theme="dark"] .navbar .logo img { filter: invert(1) brightness(1.4); }
+@media (max-width: 767px) {
+  .navbar { padding: 10px 14px 0 !important; }
+  .navbar .link { font-size: 12px !important; padding: 8px 6px !important; }
+  .navbar .list-nav-1 { padding: 0 !important; }
+}
+@media (max-width: 479px) { .navbar .logo { display: none !important; } .navbar .nav-menu-flex { justify-content: center; } }
+
+/* ---------- Progressive blur scrims at the top and bottom edge ---------- */
+:root {
+  /* Same recipe as angelinacao.com (Framer's progressive blur): 100px tall, 8 stacked bands, blur doubling band by band
+     (0.13, 0.27, 0.53, 1.06, 2.13, 4.25, 8.5, 17px), each band 37.5% of the height with soft 12.5% ramps, no tint. */
+  --scrim-h: 100px;          /* visible height of the blur ramp at the top and bottom edge */
+  --scrim-max-blur: 17px;    /* blur radius right at the edge */
+  --scrim-curve: doubling;   /* doubling (each band twice the last, as on angelinacao.com), linear, or geometric (doubling, compensated for stacking) */
+  --scrim-layers: 8;         /* number of bands in the ramp */
+  --scrim-tint: transparent; /* page colour faded over the very edge to hide the browser's edge seam; set per page */
+  --scrim-tint-solid: 24px;  /* fully tinted strip at the edge; must exceed the edge blur to hide the browser seam */
+  --scrim-tint-fade: 40px;   /* how far that tint fades in */
+  --scrim-bleed: 40px;       /* how far the scrim extends past the viewport edge */
+}
+/* the scrim extends past the viewport edge so Chrome's edge-mirrored blur never shows a sharper strip at the top */
+.pb-scrim { position: fixed; left: 0; right: 0; height: calc(var(--scrim-h) + var(--scrim-bleed)); z-index: 15; pointer-events: none; }
+.pb-scrim.is-top { top: calc(-1 * var(--scrim-bleed)); }
+.pb-scrim.is-bottom { bottom: calc(-1 * var(--scrim-bleed)); }
+.pb-scrim > i { position: absolute; inset: 0; display: block; }
+/* tint layer sits above the blur bands and fades from the page colour at the edge */
+.pb-scrim::after { content: ""; position: absolute; inset: 0; z-index: 50; pointer-events: none; }
+.pb-scrim.is-top::after { background: linear-gradient(to bottom, var(--scrim-tint) calc(var(--scrim-bleed) + var(--scrim-tint-solid)), transparent calc(var(--scrim-bleed) + var(--scrim-tint-solid) + var(--scrim-tint-fade))); }
+.pb-scrim.is-bottom::after { background: linear-gradient(to top, var(--scrim-tint) calc(var(--scrim-bleed) + var(--scrim-tint-solid)), transparent calc(var(--scrim-bleed) + var(--scrim-tint-solid) + var(--scrim-tint-fade))); }
+/* white pages get a white tint; legacy dark pages keep blur only */
+/* no page gets a tint: blur only, as on the reference. The 40px bleed past the viewport edge still hides the browser's edge seam. */
+@media (max-width: 767px) { :root { --scrim-h: 72px; } }
+
+/* ---------- Hero heading: words settle in from a blur ---------- */
+h1.hero-heading .hw, .fx-words .hw { display: inline; opacity: 0; filter: blur(10px); will-change: opacity, filter; }  /* inline, not inline-block: mixed fonts must not stagger the line box */
+h1.hero-heading.is-in .hw, .fx-words.is-in .hw { animation: hwIn .9s cubic-bezier(.22,.61,.36,1) both; animation-delay: calc(var(--i) * 42ms + 80ms); }
+@keyframes hwIn {
+  0%   { opacity: 0; filter: blur(10px); }
+  60%  { opacity: 1; filter: blur(2px); }
+  100% { opacity: 1; filter: blur(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  h1.hero-heading .hw, .fx-words .hw { opacity: 1; filter: none; animation: none !important; }
+}

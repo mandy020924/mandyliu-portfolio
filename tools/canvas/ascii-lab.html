@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>ASCII Cloud Lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="description" content="The ASCII footer drawing scattering out of the pointer's way like a cloud: symbols fade out and in on their own clocks and drift a little as you pass."/>
+<style>
+:root { --ink: #161616; --sub: #6f6f6f; --chip: #f1f1f1; --art-ink: #858585; --art-mid: #ababab; --art-dot: #d9d9d9; }
+html, body { margin: 0; background: #fff; color: var(--ink); font: 13px/18px "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; overflow: hidden; }
+.top { position: fixed; left: 16px; right: 16px; top: 14px; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; pointer-events: none; }
+.top > * { pointer-events: auto; }
+.modes { display: flex; flex-wrap: wrap; gap: 4px; padding: 5px; border-radius: 22px; background: rgba(255,255,255,.86); border: 1px solid rgba(0,0,0,.07); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.chip { font: inherit; font-weight: 600; border: 0; background: transparent; color: #2a2a2a; border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+.chip:hover { background: var(--chip); }
+.chip[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.ctl { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.86); border: 1px solid rgba(0,0,0,.07); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.ctl label { font-weight: 500; white-space: nowrap; } .ctl output { color: var(--sub); font-variant-numeric: tabular-nums; min-width: 5ch; }
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100px; height: 18px; background: transparent; margin: 0; cursor: pointer; }
+input[type="range"]::-webkit-slider-runnable-track { height: 3px; border-radius: 3px; background: #ddd; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -5.5px; border-radius: 50%; background: var(--ink); border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+.what { position: fixed; left: 16px; bottom: 16px; z-index: 5; max-width: 440px; padding: 10px 14px; border-radius: 14px; background: rgba(255,255,255,.9); border: 1px solid rgba(0,0,0,.07); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); color: var(--sub); }
+.what b { color: var(--ink); font-weight: 600; } .what i { font-style: normal; color: #9a9a9a; }
+.stage { position: fixed; inset: 0; display: flex; align-items: flex-end; }
+canvas { display: block; width: 100vw; cursor: crosshair; }
+@media (max-width: 720px) { .what { display: none; } input[type="range"] { width: 76px; } }
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="ctl"><label for="radius">Reach</label><input type="range" id="radius" min="24" max="220" step="2"><output for="radius"></output></div>
+  <div class="ctl"><label for="soft">Soft edge</label><input type="range" id="soft" min="0" max="1" step="0.05"><output for="soft"></output></div>
+  <div class="ctl"><label for="trail">Settles in</label><input type="range" id="trail" min="80" max="2400" step="20"><output for="trail"></output></div>
+  <div class="ctl"><label for="wobble">Irregular</label><input type="range" id="wobble" min="0" max="0.7" step="0.05"><output for="wobble"></output></div>
+  <div class="ctl"><label for="grain">Ragged edge</label><input type="range" id="grain" min="0" max="1" step="0.05"><output for="grain"></output></div>
+  <div class="ctl"><label for="power">Drift</label><input type="range" id="power" min="0" max="2" step="0.05"><output for="power"></output></div>
+  <div class="ctl"><label for="breath">Breath</label><input type="range" id="breath" min="0.05" max="0.6" step="0.05"><output for="breath"></output></div>
+  <div class="ctl"><label for="falloff">Centre bias</label><input type="range" id="falloff" min="0.5" max="4" step="0.1"><output for="falloff"></output></div>
+</div>
+<div class="what" id="what"></div>
+<div class="stage"><canvas id="c" aria-label="ASCII drawing of the two hands from Michelangelo's Creation of Adam"></canvas></div>
+<script type="text/plain" id="art">
+                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                        
+                                   .                                                                                                                                                                                                      .             
+                                         .                                                                                                 ..  . .                                                                                                      
+                             .  .     .                                                                                                   .        .                                                                                            .       
+                               .. . .  .     .                             ..        .                         .                   .                     .    .                                                            .                      .     
+                                  .  .  .                     .                       .          .            .               .    .        ..    ...  . .   . .                    .                                .              .  .    .     .     
+     .    .    .                   ....  . .  .  .           .        .               . . .   . .              .        ..  ..  .    .     .  .   ...     .  .                    .             .  .           .   ..     . .   .     . . ..    . ..    
+..     . .....       .     . . ...   .   .   .   . . .  .   .                . .        .     ...          .  ..       .    .  .  ....    .  .       . .           .      .         . . .      ... .  . .   .   .   . .  .  ..     ....  ..        ..  .
+      . .       . ..   .    .         .  .     . . .    .  .   .. .   ..  . .  . ..  . ..     . .      ..   ...  .  .  .   . .  .     . .. .. ..  . .   . . ... .   . ..  .   .   ..     .    .       .  .   .      .  ..      .. ..   .   ....       . 
+    .   .. .  . ...  .. .. ... .  .. ... .. ..  ... ...   .  ...  .. .  .  ... .....    .    . .  .    . .. .. .. . .. . .  ....    .    ..   .. ... . ..      ..  .  . ...... ... .   ..    ..   .. .. . .       ....       ... .  ...  ...  .  ..  .. 
+. ........... . . .  . .. .. .... ... ...  . .... ...... ..  ... . . ... .. ... .. ...  .. ....   .  ....   ... .  .  .   .  ... . ... .. .      ....  . ..    . ....  . ....     .  . . .. .. . .. ..   .   .   ... .. .. .. .. . .... ... ... ...  . .
+. ..                                       ... .. . .         ...                               .. .                            .. . . .   ..... .......    .                       ..             ..  ..::-----::-=++******++++++++++++++++++++++++++++
+.......  ...  . ... . ... ........ ... ... ...... ... .. ..... .. ... .. .. ..    ............... . ........ . ...... ..  .....  ..... ...... ... ...  . ...... ................ .. ......  ..  .. .::-=-===--=*#%###%%%%%%%###%%%%%%%%%%%%%%%%###%%%%%%
+.... ... ........ . ..... ..... . .. ...............  .........   .....     ..   ....... . ... ... ..... ...... . .........  ............. ..................  ...... . ... ....   .... .... .   :-====---=+#%%%%*+*#*++*####%%%%%%%%%%%%############%%%
+...... .......  .. ........  ... ................................... ...................  ................................ ... ................. ............. ...................  ........ .:-----:::-+##%%%%%+:-+++**#**######%%%%%#***###%@@%%%####%
+............................ ........... ..............................     ............  ............... ......................  . . .....................................................:::::---=+*##########+-==:-=+*+++*###%%#**+===+=+**++====++**
+:........................................................................   ..    ....   ...............................................................................................::-::--===*#%######+++***+=-::===++##*#%#*++====++*+======+****#
+:...................................  .  ... ..................................    ................................................................................................:.:::--::-=+=+*#%%###%%*+=++**+=+--==-==++++**+=------====+*++===::-*
+:.:...................................  ........    .   ..........                 ..       .....................................................................................::::--::..:-+*++*##**##%%%#**++*+++=-::.-=+++++**=:.::::--=++**-:-::=+#
+::::................................... ...   .... ....   ........                            .................................................  ..............................::-::::::.:::-=+++*#**####%%%#*+++***-=-:-=++++++++=-:...:-=+***+=...:=*#
+:.::.:...........................................       . .........                .       ..................................................................................:::-...::-=--=+**+**#####%%%%%%%#*******#+++=++++*+++=-::::-+*+++*#-::::-+*
+::..::::::::......................................        ........               .. ...   ................................................... .    .......    .............:::::-....:=+*##++=+###*#*##%%%%%%%%#*++=--===:....:::-=:....::-:---+++-=*+=*
+..............................................                                 ... . .    ............................................    . ......   . ..   .............:-::-:=*@@@@@#.    :@#******#%%%%%%#+==:.....:::::::::::::::::::::--==+::.+*--:
+...............................................                     ........................................................... .          .....       .   . ...........:-::+*++#@@%:    ++- -#+*********#**##=:.......  ....::::::::-::::::--=*-:=**+=+
+...... ..   .                      ........    ..            .  . ................ .......................................... ...      .........    .. ..  . ....  ....:-:=+++=+*@@:  =-@#@#:**--==++*+*#***#*-:-:..      ...::-----------==+*###=+*****
+...     .          ...         . ..   .   .........  ... .................................................. .....................            .. .   ...      ........:-+=++==-++*=     =@:. :@+--==-::::=+***+=-:...      ..::---------======++**---+***
+:::::.........................:::::.    .     ...... ..........................................................................        ..... ...    .....  ... .....:---=---==--*#%@@@@. .%@@= ..--:::-=+--++=:............::::-----==:...:-=*##+-:--+**
+===---:::---------------:::::::-:::.            ......................        ......................................................  ...     ......  ..  ........::-=+++-.::--:+@%+@-   #@@@@*:...::++*+++=-:...........::::-----=*=:.....:=*+**+=++**#
++=------:-------------------=---::::..            .................   .. .... ......................................................   ..             ..  ........:--:-==*-:--:.+@#.   .%@@@@@*===**+++*+-::..............:-=*##%%*=:::::-=+**+++****+*#
+---===-------------:-:---------------:..     .... ................ ..... ......................................................... ..  ..   ......    .       ...:---:::-+##+---+%%#=-=######%**+++***++=.....      .....:-=**++#*+=---=++***++++****++*
+=======---===---:-------::----==-----:::::.     ..        ........................................................................  ..        ..      ...    .:::---:::-*%%%%#+:...... ...::-=+--++***+=-....       .....:-+#**+*+++=-=+**+++++++***+++*
+----------===-=-----:----===***+*#*+=---:::-::..............   ........  ..........................................    . .......  . .        ....     ..    .:-----::-=#%%%%%-:::.....  ..:::::-======-:.            ...:-=++*****+==+*##*+==++++++****#
+------------=====------=+###*+==+**+*+*=::::--:-:.......      ..  .....  ................. .................. .............      ..........            ..  ..:----::-*#%%%%%+---.......    ..  ..........             ..:-=====++********=::-+*++++****%
+-----:---:::--===--=--=+#+==++=+##*=-=+##=:-----:::........  .......   ...   ..          .................... ... .. ..............                      ...:--=-::=*%%%%%#+-:...........        ..    ...             .::::---==--:::---:::::-=++****%@
+::::::::::::---==--==+*++*++*##*=:...:=**#----:--::::......  ......    .......         ....... .................  .  ...........              ..      .....:--==::=#%%#*-..................       .   . ...     ............:::::----====++++===-:=*%%%%
+:..:::::.:::::---====***#*=*===:...:-+**+*+=----::::--:.............   ........ .   .......... ...............  ..   .. .. ..                         .....-===-:=##-...........::-=:..-=--.          ...................::---=++=*+=---====--=++=+*%%#*
+:::::::......::::--=**##%#=--......::=*==*=-----::::----................. ....................  .............            ..   .                          .:=+==--+=.. .....:::-==+++++--=--=:           ..................:==-::-:------===-----====+**+
+::::::..:::::::::::=+#*%%=::-......:==:.-*------:-:------...............................   . .  .  .  ..........                                       ... ............::--=++++==+++++==:-:-.     .    ...............::::::--:-=---=---=-::::-----===+
+::::::::...:::::::--+#**=..........:---------------=+===-:...............................   .   .............:...                                  .................:-==++==-======-::---:--:--.    ........   ........:::--::=+=---=--===-:::::::------
+--:::::::::::::-----=+*=.......:...:=+==+=-==---=====+===-:......................................:::::..........-:..                      ...  .....................-+++=====++*%#:::----==+++*+::.....................:::--=--::--:--=-===-.....:::::::
+--------------------===-.....::-==-:-+*+---------==-=====---..........  .......................:-======.....---:::.:-:              .. .....:::.......      ....:::-++++++*#%%%%%*:.::--:::::::::-==:    .........::.::--=-......::::-------::....::::::
+--======++++++=+=======-.....:::-+**+=*=----------------=====-................................:==+++-...::..:+=****+-::  ...::.. .::....:=+--::::...::.......:-====+++*#%%%%%%%%%*:::--::::::..........    ........:::-=-..:........::::----::::....::::
+====++*#**=--:...::--==::.......:+*#==----::----:::.:::-=====--:...........................::-=++*=...........:-+:*+*.-- .......:=:..-:-=++++==-----===-----=+++++*#%%#%%#%%%%%%%%*=-----:::........... ...........:--:....................::::::::.....
++*****=:........:=++**--:...:.:=****##**==-.............::--:.........:::::..:::::......:-==++**=.............:=-:.**:        ...:-=-==+++-.    ........:---===#%%%%%%##%%%%%#***##*-==----:::.........::....:::-----::...................::--:.......::
+#*##*:......::::.:=++=:.....-==**+**#*****:......:::::..................:-----:........:-=+++=:......... .  ....... .         .:=--=-==-.               .::-=-+#%%%%##########++***#*---===------=-.....:=+=-==-::::::..............:-==-:::---=++=-:::.
+**++-......:--....:::......:=++++***+++++=......:-=-...:.:............::::---:.....:::--=++:........         ...               :=::.=:                  .::-==+##%%%%#####+*********###*****++++**#*+::::.::-=+=:::........:.:::--==:.............::--++
++++=:...::::::.....:.:::::.:==-=+=--:::.........-+*+=======--::::::---===+++-::::-=+++++-.................. ....               .-:. ..                   ::-==*#%%%%%#%%%#+*#******##**####%%###%%%%#+:.....::-==::::::::....:===:... .... .............
+===-.....:...............::::......:...........:+##*+==----===++++++++++***++++**=:.::-.................   .....                                         :::=++###%%%%%%###**#*###*++++##**####*#####**=::::::.:::-=-:::...:++=:.....       . ...  . .::
+===-......................::.................:-+#######*++==+++****++=-::::::::..   ..:............  ..    .....                                         .---+*###%%%%%%%#%%##%%%#*+*+*##******###%%%#*##**+=---..:-=:....-=-:....           .     ..:..
+++++:..::..................:...............:-=+**#***+=====++=--::::::::::--:..... ....  ..:.        .    ......                                         .-::+*###%%%%%%%%%%%%#%%%***###%#==+*####%#####%%%%#%%%*++**#+-:::......          .      ......
++=+++-:-=:...............::::.............:-=+******+==-=====-=--------:::......... .......:-....     ..   .....                                          :::-*####%%%%%%%%%%%%%%%%%%%#*=-==+#######*#######*##****######*+=-:....        ..     .......
+++++==-=+*...............:::............::-=++*****+=-----------=--=---:........... ....::--:::.........                                                   -::=*##%%%%%%%@@@@%%%%%#*++=---=+####*##***#**###**++*****#**##****+:..      ....   ..:......
+++==+--=+*-..........:::::::..........:::-==++****++===-------------...........-:......:--==-:...::::-:....                                   .             -::+###%%%%%%%%@@@%%#**+*=::=+*###***#*#******+***+++===+*+====*#**#*=...:-=+=..   .-:......
++=++=:-=***=:::.::::::::----........:::-=++++++***========----:--:..........:-=-........:-==-::::::::::::::...    .                           .             .::-*####%%%%@%%@%%#***+=+-+####%###*##*#***+-===::::--=++++=-=+**#*=--:....::-.....=-::::::
+++++=:-=****---::::------===::.....:::-=++********++======+=---:...........:=+=.........-===--:-----:::::::::.....                                           .---*#####%%%@%%%%#*+*++#%*#%%%%%%##***######+==::.::--++=++++****=-:.......:::....::-----=
++==++-=+****::-=------------::......::-=++*******##********+==:...........-+=..........:-==::::-:---:::::.:....::::.                         ..               .--=*###*#%%%%%%%*++#*+*%%%%%#%#########*####*=----=--=-:=*-=***+=::::..::::::::...::...:-
+=====-+***#*:.::::.....::.............:-++++++*#*#%%########+...........:-+:....... ...:-=-::::::::----:::..:::::::::.                      ...                .-=+*##***#%%%%#*+#*#++#%#%##%%##%###*******=+==-:-+=+*###***+*++=::::--::-=+=:::..:.:---
+=-=-::-+++**:..:......................::=+*******#%%%%%%%%%*:.........::-+-............-==-::::::::::::--::::::-:::::-:.                     ...                 .==**+***#%%#*=*#*++*+*%###%%#%######++**####+=-=**+==*****+++=::::-+++++*******++==+++
++=-:::::-=*#-..::.::.................:::=+***********#%%%#+:.........:::-+......... ..:-=+----::::::::::::--:::::------:.                    ...                  ..-++++*#***=+**#+++*+=*##%#%##**###*****####*+--+#==+++++++++==++++++++++***##*******
+:.....:--:-**:::::::............::::::::-++*****++=+++*=-::..........:::=:......:.....-=+++=====---:::::::-----:::::-:::::.                  .                      ..:=**+=+++*:.+#*++=+**#######*##******##%%#++=:=##+=======++===-==++++*************
+:........:-+===::..:::::.......::.........:-===----=+++=:::........::::--.....::.....:=++*****++=======---::----==:::::::::..                .                          ....:..  ..=*+=+=+++*#####*############**+=+=-+##---=-===+++++++++**************</script>
+<script>
+(function () {
+  'use strict';
+  /* ---------- the drawing as a grid of cells ---------- */
+  const rows = document.getElementById('art').textContent.replace(/^\n/, '').split('\n').filter((r, i, a) => r.length || i < a.length - 1);
+  const ROWS = rows.length, COLS = rows[0].length, N = ROWS * COLS;
+  const chars = new Array(N); for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) chars[r * COLS + c] = rows[r].charAt(c);
+  const RAMP = ' .:-=+*#%@', GLYPHS = '.:-=+*#%@/\\|<>^~;,\'"!?01xo';
+  const level = (ch) => { const i = RAMP.indexOf(ch); return i >= 0 ? i : 6; };
+  const tone = (ch) => ch === '.' ? 'dot' : (ch === ':' || ch === '-') ? 'mid' : 'ink';
+  const COL = { dot: '#d9d9d9', mid: '#ababab', ink: '#858585' };
+  const seed = new Float32Array(N), seed2 = new Float32Array(N); for (let i = 0; i < N; i++) { seed[i] = Math.random(); seed2[i] = Math.random(); }
+
+  /* ---------- the treatment: Scatter, cloud-like ----------
+     Each symbol within reach fades away on its own clock and fades back as you pass; near the pointer nearly all are gone, at the rim only a few.
+     Fading, not winking: every symbol has a soft band over which it goes from present to absent (Breath), and its clock runs slowly, so the cloud
+     breathes in and out rather than sparkling. While a symbol is fading it also drifts a few pixels, away from the pointer and on a slow eddy
+     of its own (Drift), and drifts back as it returns. */
+  const MODES = [
+    { key: 'scatter', name: 'Scatter', what: 'Symbols in the pointer\'s way fade out on their own clocks and fade back as you pass, drifting a few pixels while they go. Near the pointer almost all are gone; at the rim only a few. The cloud breathes rather than sparkles.',
+      fn: (i, r, c, ch, o, t, x, y) => {
+        const gate = seed[i] + 0.16 * Math.sin(t / 420 + seed[i] * 40) + 0.08 * Math.sin(t / 150 + seed2[i] * 40);   // this symbol's own threshold, slowly wandering
+        const a = Math.max(0, Math.min(1, (gate - o) / P.breath + 0.5));                                          // fades over a band rather than switching
+        if (a <= 0.01) return null;
+        const gone = 1 - a, dx0 = x - mx, dy0 = y - my, d = Math.hypot(dx0, dy0) || 1;
+        const drift = 4 * P.power * gone, away = 3 * P.power * o;                                                   // a small eddy of its own, plus a nudge away from the pointer
+        return { ch, alpha: a * (1 - 0.15 * o), dx: drift * Math.sin(t / 700 + seed[i] * 60) + away * dx0 / d, dy: drift * Math.cos(t / 560 + seed2[i] * 60) + away * dy0 / d };
+      } },
+  ];
+  const byKey = {}; MODES.forEach((m) => byKey[m.key] = m);
+  const P = { mode: 'scatter', radius: 60, soft: 0.6, trail: 340, wobble: 0.4, grain: 0.9, power: 1, breath: 0.4, falloff: 3.5 };
+  try { Object.assign(P, JSON.parse(localStorage.getItem('ascii-cloud-lab-4') || '{}')); } catch (e) {}
+  P.mode = 'scatter';
+
+  /* ---------- engine ---------- */
+  const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  let W = 0, H = 0, cw = 0, chh = 0, F = 0, kx = 1, dpr = 1, base = null;
+  const open = new Float32Array(N); const live = new Set();
+  let mx = -1e9, my = -1e9, inside = false, raf = 0, last = 0, vx = 0, vy = 0, pmx = 0, pmy = 0;
+  const PH = [Math.random() * 6.28, Math.random() * 6.28, Math.random() * 6.28];
+
+  function layout() {
+    W = innerWidth; if (!W) return;
+    cw = W / COLS; chh = cw * (12.563 / (13.934 * 0.5)); H = chh * ROWS; F = chh / 0.9016; dpr = Math.min(2, devicePixelRatio || 1);
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.font = '600 ' + F + 'px ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace';
+    kx = cw / ctx.measureText('M').width;
+    base = document.createElement('canvas'); base.width = cv.width; base.height = cv.height; const b = base.getContext('2d');
+    b.setTransform(dpr, 0, 0, dpr, 0, 0); b.font = ctx.font; b.textBaseline = 'middle'; b.textAlign = 'center';
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { const ch = chars[r * COLS + c]; if (ch === ' ') continue; b.fillStyle = COL[tone(ch)]; b.save(); b.translate((c + 0.5) * cw, (r + 0.5) * chh); b.scale(kx, 1); b.fillText(ch, 0, 0); b.restore(); }
+    kick();
+  }
+  function reach(x, y, T) {   // how strongly the pointer reaches a point: an irregular drifting blob, stretched along the movement, with a frayed rim
+    const R = P.radius, inner = R * (1 - P.soft), sp = Math.min(1, Math.hypot(vx, vy) / 900), len = Math.hypot(vx, vy) || 1, ux = sp ? vx / len : 1, uy = sp ? vy / len : 0, stretch = 1 + 1.8 * sp * P.wobble;
+    let dx = x - mx, dy = y - my; const along = dx * ux + dy * uy, across = -dx * uy + dy * ux; dx = along / stretch; dy = across;
+    const th = Math.atan2(dy, dx), wob = 1 + P.wobble * (0.55 * Math.sin(3 * th + T * 0.9 + PH[0]) + 0.3 * Math.sin(5 * th - T * 1.4 + PH[1]) + 0.15 * Math.sin(8 * th + T * 2.3 + PH[2]));
+    return { d: Math.hypot(dx, dy) / wob, R, inner };
+  }
+  function draw(now) {
+    raf = 0; if (!base) return;
+    const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000)); last = now;
+    const mode = byKey[P.mode], decay = Math.exp(-dt * 1000 / P.trail), T = now / 1000;
+    vx += ((mx - pmx) / Math.max(0.008, dt) - vx) * 0.25; vy += ((my - pmy) / Math.max(0.008, dt) - vy) * 0.25; pmx = mx; pmy = my;
+    if (inside) { const Rm = P.radius * (1 + P.wobble) * 2.8;
+      const r0 = Math.max(0, Math.floor((my - Rm) / chh)), r1 = Math.min(ROWS - 1, Math.ceil((my + Rm) / chh)), c0 = Math.max(0, Math.floor((mx - Rm) / cw)), c1 = Math.min(COLS - 1, Math.ceil((mx + Rm) / cw));
+      for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) { const i = r * COLS + c, q = reach((c + 0.5) * cw, (r + 0.5) * chh, T), d = q.d + (seed[i] - 0.5) * q.R * 0.6 * P.grain; if (d >= q.R) continue;
+        const u = Math.min(1, Math.max(0, (d - q.inner) / Math.max(1, q.R - q.inner))), target = Math.pow(1 - u * u * (3 - 2 * u), P.falloff);   // steep: strong at the centre, faint at the rim
+        if (target > open[i]) { open[i] += (target - open[i]) * 0.45; live.add(i); } } }
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(base, 0, 0); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+    for (const i of live) { const o = open[i] * decay; open[i] = o;
+      const r = (i / COLS) | 0, c = i - r * COLS, ch = chars[i], x = (c + 0.5) * cw, y = (r + 0.5) * chh;
+      const g = ch === ' ' ? null : mode.fn(i, r, c, ch, o, now, x, y, dt);
+      if (o < 0.01) { open[i] = 0; live.delete(i); continue; }
+      ctx.clearRect(c * cw - 0.5, r * chh - 0.5, cw + 1, chh + 1); if (!g) continue;
+      ctx.globalAlpha = g.alpha == null ? 1 : Math.max(0, Math.min(1, g.alpha)); ctx.fillStyle = COL[g.tint || tone(g.ch)];
+      ctx.save(); ctx.translate(x + (g.dx || 0), y + (g.dy || 0)); if (g.rot) ctx.rotate(g.rot); const s = g.scale || 1; ctx.scale(kx * s, s); ctx.fillText(g.ch, 0, 0); ctx.restore(); }
+    ctx.globalAlpha = 1;
+    if (live.size || inside) kick();
+  }
+  const nextFrame = /[?&]timer\b/.test(location.search) ? (cb) => setTimeout(() => cb(performance.now()), 16) : (cb) => requestAnimationFrame(cb);   // ?timer keeps it running in a hidden tab, for testing
+  function kick() { if (!raf) raf = nextFrame(draw); }
+  cv.addEventListener('pointermove', (e) => { const b = cv.getBoundingClientRect(); mx = e.clientX - b.left; my = e.clientY - b.top; inside = true; kick(); });
+  cv.addEventListener('pointerleave', () => { inside = false; kick(); });
+
+  /* ---------- controls ---------- */
+  const what = document.getElementById('what');
+  const S = { radius: [document.getElementById('radius'), (v) => v + ' px'], soft: [document.getElementById('soft'), (v) => Math.round(v * 100) + '%'], trail: [document.getElementById('trail'), (v) => v + ' ms'],
+              wobble: [document.getElementById('wobble'), (v) => Math.round(v * 100) + '%'], grain: [document.getElementById('grain'), (v) => Math.round(v * 100) + '%'], power: [document.getElementById('power'), (v) => +v === 0 ? 'none' : Math.round(v * 4) + ' px'], breath: [document.getElementById('breath'), (v) => Math.round(v * 100) + '%'], falloff: [document.getElementById('falloff'), (v) => (+v).toFixed(1) + 'x'] };
+  function sync() {
+    Object.keys(S).forEach((k) => { S[k][0].value = P[k]; S[k][0].nextElementSibling.textContent = S[k][1](P[k]); });
+    const m = byKey[P.mode];
+    what.innerHTML = '<b>' + m.name + '.</b> ' + m.what + '<br><i>Reach: how far it spreads. Soft edge: how gradually. Settles in: how long the cloud takes to fill back behind you. Irregular and Ragged edge: the shape. Drift: how far a symbol wanders while it fades. Breath: how softly each symbol fades, from a wink to a slow dissolve. Centre bias: how much stronger the middle is than the rim; higher concentrates the effect at the pointer and leaves the outer reach faint.</i>';
+    try { localStorage.setItem('ascii-cloud-lab-4', JSON.stringify(P)); } catch (e) {}
+    open.fill(0); live.clear(); kick();
+  }
+  Object.keys(S).forEach((k) => S[k][0].addEventListener('input', () => { P[k] = +S[k][0].value; sync(); }));
+  addEventListener('resize', layout);
+  layout(); sync();
+})();
+</script>
+</body>
+</html>

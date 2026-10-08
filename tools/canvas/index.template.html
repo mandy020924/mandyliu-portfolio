@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<!-- SOURCE of the Work page. Edit this file, then run: python3 tools/canvas/build.py  (writes index.html; --artifact also writes the prototype page). -->
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>__TITLE__</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Mandy Liu — Product designer" property="og:title"/>
+<link href="images/658a52a7f3efd1f4a4e3ef41_ezgif.com-resize_1_-c3c74a.gif" rel="shortcut icon" type="image/x-icon"/>
+<link href="images/658a52ab40527efa984d7285_ezgif.com-resize-633a5b.gif" rel="apple-touch-icon"/>
+<link href="css/pp-fonts.css" rel="stylesheet" type="text/css"/>
+<link href="css/site-fx.css" rel="stylesheet" type="text/css"/>
+<link href="css/work.css" rel="stylesheet" type="text/css"/>
+<link href="css/site-foot.css" rel="stylesheet" type="text/css"/>
+<link href="css/gnav.css" rel="stylesheet" type="text/css"/>
+<style>
+/* ===== canvas field: the project grid as one sliding plane ===== */
+.work-hero { z-index: 3; }   /* the fish tile hangs below the hero box and must sit above the canvas edge */
+html.leaving body { opacity: 0; transition: opacity .3s ease; }   /* leaving for a case study: the page blurs away as it fades, then the case study resolves out of a blur of its own */
+html.leaving .work-hero, html.leaving .canvas-field, html.leaving .site-foot { filter: blur(14px); transition: filter .3s ease; }
+.canvas-field { position: relative; margin-top: calc(clamp(72px, 9.1329 * var(--vw), 237px) + 5.7803 * var(--vw));   /* 158px at 1730, plus 100px more (scaled) under the taller heading */
+  cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; overflow-x: clip; overflow-y: visible; }
+.canvas-field.no-drag, .canvas-field.fit { cursor: default; }
+/* The project index (Figma 76:4813): the project names as pills down the left edge, level with the first row of cards, 26px in. Set at the nav
+   pill's scale (the file's 15px pill rendered at 12/16, as the nav is), 6px apart, in the nav's glass. It belongs to the page, not the drifting
+   canvas: the cards slide under it, and once the page scrolls past it, it sticks just under the nav for as long as the canvas is on screen (a
+   zero-height sticky wrapper carries it, so the plane is not pushed down). Hovering a name lifts its card and the pill comes out to the right with
+   a small spring; clicking centres that card in the window, and a second click opens it. It arrives with the subtitle, name by name, and steps
+   aside while a project is open. */
+.work-index-wrap { position: sticky; top: calc(70px - 40px * var(--k, 1)); z-index: 3; height: 0; pointer-events: none; }   /* stuck, the first pill sits 70px down: under the nav */
+.work-index { position: absolute; left: 26px; top: calc(40px * var(--k, 1)); display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin: 0; padding: 0; pointer-events: none; transition: opacity .3s ease; }
+.work-index button { pointer-events: auto; appearance: none; -webkit-appearance: none; border: 0; margin: 0; height: 28px; padding: 6px 15px; box-sizing: border-box; border-radius: 22px;
+  background: rgba(0, 0, 0, .05); -webkit-backdrop-filter: blur(10px) saturate(1.15); backdrop-filter: blur(10px) saturate(1.15); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25);   /* the nav pill's glass */
+  font-family: var(--ui-font); font-weight: 500; font-size: 12px; line-height: 16px; letter-spacing: 0; color: var(--accent, #545454); white-space: nowrap; cursor: pointer; transform-origin: 0 50%;
+  transition: background-color .3s ease, color .3s ease, box-shadow .45s cubic-bezier(.22, .61, .36, 1), transform .45s cubic-bezier(.22, .61, .36, 1); }   /* settling back: a plain ease-out */
+.work-index button:hover, .work-index button.is-on { background: rgba(0, 0, 0, .09); color: var(--ink, #000); transform: translateX(8px) scale(1.04);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35), 0 8px 20px -8px rgba(0, 0, 0, .22); transition: background-color .2s ease, color .2s ease, box-shadow .5s cubic-bezier(.34, 1.25, .64, 1), transform .5s cubic-bezier(.34, 1.25, .64, 1); }   /* coming out: a light spring */
+.work-index button:active { transform: translateX(8px) scale(.98); transition-duration: .12s; }
+.work-index button.is-active, .work-index button.is-active:hover { background: var(--ink, #000); color: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, .18); }   /* the card it centred: black, as the nav's active tab and the case studies' rail */
+.work-index button:focus-visible { outline: 2px solid var(--ink, #000); outline-offset: 2px; }
+.canvas-field.is-open .work-index, .canvas-field.fit .work-index { opacity: 0; pointer-events: none; }
+.work-hero ~ .canvas-field .work-index button { opacity: 0; }                                                                        /* until the entrance */
+.work-hero.go ~ .canvas-field .work-index button { animation: indexIn .7s cubic-bezier(.22, .61, .36, 1) calc(600ms + var(--i, 0) * 40ms) both; }
+.work-hero.still ~ .canvas-field .work-index button { opacity: 1; }
+@keyframes indexIn { 0% { opacity: 0; filter: blur(8px); transform: translateY(6px); } 60% { opacity: 1; filter: blur(1px); } 100% { opacity: 1; filter: blur(0); } }   /* no transform in the last frame: a held one would pin the pill and the hover spring could never move it */
+@media (prefers-reduced-motion: reduce) { .work-index button { opacity: 1 !important; animation: none !important; } }
+@media (max-width: 899px) { .work-index { display: none; } }
+.canvas-field.dragging { cursor: grabbing; }
+.canvas-field.dragging .work-card, .canvas-field.fit .work-card { pointer-events: none; }
+.work-plane { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 0 0; will-change: transform; }
+.work-plane .work-card { position: absolute; height: 500px; }
+.canvas-field img { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
+/* a card can carry a short clip that fades in over its still while it is hovered or held */
+.work-card .cover-video { position: absolute; inset: -2px; width: calc(100% + 4px); height: calc(100% + 4px); object-fit: cover; display: block; pointer-events: none; opacity: 0; transition: opacity .35s ease; }
+.work-card:hover .cover-video, .work-card.is-hover .cover-video, .work-card.is-open-card .cover-video { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .work-card .cover-video { display: none; } }
+/* a card can carry a carousel of phone screens over its still, framed as in Mandy's Figma reference: the phone starts 8.5% down, is 57% of the card wide
+   at its own proportions, and runs off the bottom of the card, where the card's edge cuts it (that cut is the look; nothing else is cropped).
+   Each phone is centred in a slot whose centre sits at 50.5% across.
+   Phones are spaced 81% of the card apart, so a stretch of plain gradient shows between one leaving and the next arriving. Each phone shrinks to 80%
+   as it slides out and grows from 80% as it slides in. The background crossfades to the next frame's gradient only during a slide.
+   Loop, 4500ms on one shared clock: hold 0-900, slide 900-1500, hold 1500-2400, slide 2400-3000, hold 3000-3900, slide 3900-4500.
+   Everything is declared paused and only runs while the card is hovered or held (the running rule below outranks every animation rule here). */
+.work-card .cover-slides { position: absolute; inset: -2px; overflow: hidden; pointer-events: none; background: linear-gradient(180deg, #33b2b3 0%, #b1e2ee 100%); }
+.work-card .slides-bg { position: absolute; inset: 0; opacity: 0; }
+.work-card .slides-bg.bg2 { background: linear-gradient(180deg, #f62052 0%, #eeb5c2 100%); animation: ttBg2 4500ms linear infinite paused; }
+.work-card .slides-bg.bg3 { background: linear-gradient(180deg, #00a2c9 0%, #b6e0eb 100%); animation: ttBg3 4500ms linear infinite paused; }
+.work-card .slides-track { position: absolute; left: 22%; top: 8.5%; width: 57%; display: flex; align-items: flex-start; will-change: transform; animation: ttSlides 4500ms linear infinite paused; }
+.work-card .slides-track .slot { flex: none; width: 100%; margin-right: 41%; display: flex; justify-content: center; align-items: flex-start; }   /* 41% of the slot = the 24% of the card between phones */
+.work-card .slides-track img { width: 100%; height: auto; display: block; transform-origin: 50% 50%; will-change: transform; }
+.work-card .slides-track .p0 { animation: ttP0 4500ms linear infinite paused; } .work-card .slides-track .p1 { animation: ttP1 4500ms linear infinite paused; }
+.work-card .slides-track .p2 { animation: ttP2 4500ms linear infinite paused; } .work-card .slides-track .p3 { animation: ttP3 4500ms linear infinite paused; }
+.work-card:hover .cover-slides .tt-anim, .work-card.is-hover .cover-slides .tt-anim, .work-card.is-open-card .cover-slides .tt-anim { animation-play-state: running; }
+@keyframes ttSlides {   /* each slide moves one phone plus one gap (141% of the phone) */
+  0%, 20%       { transform: translate3d(0, 0, 0); animation-timing-function: cubic-bezier(.3, .6, .2, 1); }
+  33.33%, 53.33% { transform: translate3d(-141%, 0, 0); animation-timing-function: cubic-bezier(.3, .6, .2, 1); }
+  66.67%, 86.67% { transform: translate3d(-282%, 0, 0); animation-timing-function: cubic-bezier(.3, .6, .2, 1); }
+  100%          { transform: translate3d(-423%, 0, 0); } }
+/* a phone is full size while it is the frame on show, shrinks to 80% as it leaves, and grows from 80% as it arrives */
+@keyframes ttP0 { 0%, 20% { transform: scale(1); animation-timing-function: cubic-bezier(.3, .6, .2, 1); } 33.33%, 100% { transform: scale(.8); } }
+@keyframes ttP1 { 0%, 20% { transform: scale(.8); animation-timing-function: cubic-bezier(.3, .6, .2, 1); } 33.33%, 53.33% { transform: scale(1); animation-timing-function: cubic-bezier(.3, .6, .2, 1); } 66.67%, 100% { transform: scale(.8); } }
+@keyframes ttP2 { 0%, 53.33% { transform: scale(.8); animation-timing-function: cubic-bezier(.3, .6, .2, 1); } 66.67%, 86.67% { transform: scale(1); animation-timing-function: cubic-bezier(.3, .6, .2, 1); } 100% { transform: scale(.8); } }
+@keyframes ttP3 { 0%, 86.67% { transform: scale(.8); animation-timing-function: cubic-bezier(.3, .6, .2, 1); } 100% { transform: scale(1); } }
+/* the background only changes while a slide is happening: green -> pink on the first slide, pink -> blue on the second, blue -> green on the third.
+   The pink layer drops out the instant the blue layer fully covers it, so the last slide fades blue straight back to green. */
+@keyframes ttBg2 { 0%, 20% { opacity: 0; } 33.33%, 66.67% { opacity: 1; } 66.68%, 100% { opacity: 0; } }
+/* the banner text is white on the green first frame and black on the pink and blue frames, whose screens are mostly white; it changes during the slides */
+.tiktok .card-meta .tt-ink { animation: ttInk 4500ms linear infinite paused; }
+.work-card:hover .card-meta .tt-anim, .work-card.is-hover .card-meta .tt-anim, .work-card.is-open-card .card-meta .tt-anim { animation-play-state: running; }
+@keyframes ttInk { 0%, 20% { color: #fff; } 33.33%, 86.67% { color: #161616; } 100% { color: #fff; } }
+@keyframes ttBg3 { 0%, 53.33% { opacity: 0; } 66.67%, 86.67% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .work-card .cover-slides { display: none; } }
+
+/* ===== entrance: the heading and the subtitle blur in as whole blocks, on their own clocks, while the grid arrives (values set by the script) ===== */
+.work-hero .hero-title { --in-blur: var(--h1-blur, 14px); } .work-hero .work-sub { --in-blur: var(--sub-blur, 14px); }
+.work-hero .hero-title, .work-hero .work-sub { opacity: 0; filter: blur(var(--in-blur, 14px)); transform: translateY(8px); will-change: opacity, filter, transform; }
+.work-hero .work-sub { --end-alpha: var(--sub-alpha, 1); }   /* the subtitle may settle below full opacity (Header type panel); the heading always lands at 1 */
+.work-hero.still .hero-title, .work-hero.still .work-sub { opacity: var(--end-alpha, 1); filter: none; transform: none; }
+.work-hero.go .hero-title { animation: heroIn var(--h1-ms, 1100ms) cubic-bezier(.22, .61, .36, 1) var(--h1-delay, 150ms) both; }
+.work-hero.go .work-sub { animation: heroIn var(--sub-ms, 900ms) cubic-bezier(.22, .61, .36, 1) var(--sub-delay, 550ms) both; }
+.work-hero .hero-fish-tile { animation: none; opacity: 0; } .work-hero.still .hero-fish-tile { opacity: 1; }
+.work-hero.go .hero-fish-tile { animation: fishIn var(--fish-ms, .7s) ease-out var(--fish-delay, 1.1s) both; }
+/* "Google" arrives in its gradient (#4285F4 at the top to white at the bottom) and settles into the accent grey over 400ms once the heading has blurred in:
+   the gradient is clipped to the glyphs underneath, and the text colour fades from transparent to the grey on top of it */
+/* off for now (Mandy, 7 Oct): .work-hero .ac-google { background: linear-gradient(0deg, #fff, #4285f4); -webkit-background-clip: text; background-clip: text; color: var(--accent); } */
+/* off for now (Mandy, 7 Oct): .work-hero.go .ac-google { animation: googleIn calc(var(--h1-ms, 1100ms) + 400ms) cubic-bezier(.22, .61, .36, 1) var(--h1-delay, 150ms) both; } */
+@keyframes googleIn { 0%, 73% { color: transparent; } 100% { color: var(--accent); } }
+@keyframes heroIn { 0% { opacity: 0; filter: blur(var(--in-blur, 14px)); transform: translateY(8px); } 60% { opacity: var(--end-alpha, 1); filter: blur(calc(var(--in-blur, 14px) * .15)); } 100% { opacity: var(--end-alpha, 1); filter: blur(0); transform: none; } }
+/* ripple (after daybreak.studio/work): with a gap set, the lines (or words) of the heading and the subtitle rise into place one after another, each
+   from a fifth of its height lower, while the blocks blur in whole as above. The script wraps the words (span.w, --i = its line or its place) and sets
+   --stagger; 0 keeps the blocks arriving in one piece. */
+.work-hero.ripple .w { display: inline-block; line-height: 1; transform: translateY(.2em); will-change: transform; }
+.work-hero.ripple.still .w { transform: none; }
+.work-hero.ripple .hero-title { --base: var(--h1-delay, 150ms); --dur: var(--h1-ms, 1100ms); } .work-hero.ripple .work-sub { --base: var(--sub-delay, 550ms); --dur: var(--sub-ms, 900ms); }
+.work-hero.ripple.go .w { animation: riseIn var(--dur) cubic-bezier(.22, .61, .36, 1) calc(var(--base) + var(--i, 0) * var(--stagger, 30ms)) both; }
+/* off for now (Mandy, 7 Oct): .work-hero.ripple.go .ac-google.w { animation: riseIn var(--dur) cubic-bezier(.22, .61, .36, 1) calc(var(--base) + var(--i, 0) * var(--stagger, 30ms)) both,
+  googleIn calc(var(--dur) + 400ms) cubic-bezier(.22, .61, .36, 1) calc(var(--base) + var(--i, 0) * var(--stagger, 30ms)) both; } */   /* the word rises with its line and keeps its gradient entrance */
+@keyframes riseIn { 0% { transform: translateY(.2em); } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .work-hero .hero-title, .work-hero .work-sub, .work-hero .hero-fish-tile, .work-hero .w { opacity: 1; filter: none; transform: none; animation: none !important; } }
+/* ===== entrance, after the "motion ref" recording ===== */
+.canvas-field.arriving { pointer-events: none; }
+/* near to far: every card starts close to you (large, pushed outward from the top centre of the screen, like a zoomed-in camera) and falls back
+   into place; the cards nearest the top centre land first and the rest follow, so they overlap a little on the way, as in the reference */
+.work-plane .work-card.near { transform-origin: 50% 50%; animation: cardNear var(--in-ms, 1000ms) cubic-bezier(.16, 1, .3, 1) var(--in-delay, 0ms) both; }
+/* too close to the camera to be in focus: each card starts blurred and sharpens as it settles back into place */
+@keyframes cardNear { from { transform: translate3d(var(--in-x, 0px), var(--in-y, 600px), 0) scale(var(--in-k, 2)); opacity: 0; filter: blur(var(--in-focus, 10px)); } 12% { opacity: 1; } 55% { filter: blur(calc(var(--in-focus, 10px) * .3)); } to { transform: none; opacity: 1; filter: blur(0); } }
+
+/* ===== opening a project: the pressed card grows into place, every other card blurs and fades out, the project's details fade in beside it ===== */
+.canvas-field.is-open { z-index: 19; cursor: default; }
+.canvas-field.is-open .work-card:not(.is-open-card) { opacity: 0; filter: blur(14px); pointer-events: none; }
+.work-plane .work-card { transition: transform .6s ease, box-shadow .8s ease, opacity .45s ease, filter .45s ease; }
+.work-plane .work-card:hover { transition: transform .5s cubic-bezier(.22,1,.36,1), box-shadow .7s cubic-bezier(.22,1,.36,1) .04s, opacity .45s ease, filter .45s ease; }
+.canvas-field.is-open .work-card:not(.is-open-card) { transition: opacity .3s ease, filter .3s ease; }
+.work-plane .work-card.is-open-card, .work-plane .work-card.is-closing-card { z-index: 6; transition: transform .55s cubic-bezier(.2, .9, .2, 1), box-shadow .55s ease; cursor: default; }
+.work-card.is-open-card .card-meta { opacity: 0; transition: opacity .2s ease; }
+.open-veil { position: fixed; inset: 0; z-index: 18; background: #fff; opacity: 0; pointer-events: none; transition: opacity .35s ease; }
+.open-veil.on { opacity: 1; pointer-events: auto; }
+.open-info { position: fixed; z-index: 20; left: 60vw; right: 5vw; top: 50%; transform: translateY(calc(-50% + 10px)); opacity: 0; pointer-events: none;
+  transition: opacity .35s ease .12s, transform .5s cubic-bezier(.2, .9, .2, 1) .12s; font-family: Ppneuemontreal, "PP Neue Montreal", sans-serif; color: #989898; }
+.open-info.on { opacity: 1; transform: translateY(-50%); pointer-events: auto; }
+.open-info .oi-count { font: 500 12px/16px "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif; letter-spacing: .06em; color: #b0b0b0; font-variant-numeric: tabular-nums; }
+.open-info h2 { margin: 10px 0 0; font-weight: 500; font-size: clamp(24px, 2.2vw, 40px); line-height: 1.2; color: #545454; letter-spacing: 0; text-transform: none; }
+.open-info p { margin: 10px 0 0; font-weight: 500; font-size: clamp(15px, 1.2vw, 20px); line-height: 1.4; color: #989898; max-width: 34ch; }
+.open-info .oi-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.open-info .oi-btn { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: #161616; color: #fff; cursor: pointer; text-decoration: none;
+  font: 500 13px/16px "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif; }
+.open-info .oi-btn.ghost { background: rgba(0,0,0,.06); color: #161616; }
+.open-info .oi-btn:hover { background: #2a2a2a; } .open-info .oi-btn.ghost:hover { background: rgba(0,0,0,.1); }
+.open-info .oi-btn:focus-visible { outline: 2px solid #545454; outline-offset: 3px; }
+.open-info .oi-soon { align-self: center; font: 500 13px/16px "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif; color: #b0b0b0; }
+@media (max-width: 899px) { .open-info { left: 7vw; right: 7vw; top: auto; bottom: 8vh; transform: translateY(10px); } .open-info.on { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .work-plane .work-card.near { animation: none; } .work-plane .work-card, .open-veil, .open-info { transition: none !important; } }
+.work-plane .work-card:focus-visible { outline: 3px solid #161616; outline-offset: 4px; }
+.target-dot { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; border: 1.5px solid #161616; pointer-events: none; opacity: 0; transition: opacity .2s; z-index: 5; }
+.canvas-field.show-target .target-dot { opacity: .85; }
+
+
+/* ===== tuning panel (prototype chrome, not part of the site) ===== */
+.panel { --ink: #161616; --sub: #6f6f6f; --faint: #a3a3a3; --line: #e8e8e8; --chip: #f1f1f1; --track: #e2e2e2; --on: #1f7a4d; --idle: #b0b0b0; --warm: #9a6b00;
+  position: fixed; right: 16px; bottom: 16px; z-index: 2000; width: 292px; max-height: calc(100vh - 100px); display: flex; flex-direction: column;
+  background: rgba(255,255,255,.84); -webkit-backdrop-filter: blur(22px) saturate(1.4); backdrop-filter: blur(22px) saturate(1.4);
+  border: 1px solid rgba(0,0,0,.07); border-radius: 18px; box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 18px 48px -12px rgba(0,0,0,.22);
+  color: var(--ink); font: 13px/18px "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 10px 10px 14px; cursor: pointer; }
+.panel-head .status { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; min-width: 0; }
+.panel-head .status span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.panel-head .status i { width: 8px; height: 8px; border-radius: 50%; background: var(--idle); flex: none; transition: background .2s; }
+.status[data-state="follow"] i, .status[data-state="coast"] i, .status[data-state="drag"] i { background: var(--on); }
+.status[data-state="hold"] i, .status[data-state="focus"] i, .status[data-state="fit"] i { background: var(--warm); }
+.icon-btn { width: 28px; height: 28px; border: 0; border-radius: 8px; background: transparent; color: var(--sub); display: grid; place-items: center; cursor: pointer; flex: none; }
+.icon-btn:hover { background: var(--chip); color: var(--ink); }
+.icon-btn svg { width: 16px; height: 16px; transition: transform .25s; transform: rotate(180deg); }
+.panel.collapsed .icon-btn svg { transform: none; }
+.panel-body { overflow-y: auto; padding: 0 14px 14px; display: grid; gap: 14px; }
+.panel.collapsed .panel-body { display: none; }
+.panel.collapsed { width: auto; max-width: 292px; }
+.panel[hidden] { display: none; }
+.readout { color: var(--sub); font-variant-numeric: tabular-nums; font-size: 12px; }
+.presets { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { font: inherit; font-size: 12px; font-weight: 600; border: 1px solid var(--line); background: transparent; color: #2a2a2a; border-radius: 999px; padding: 5px 10px; cursor: pointer; }
+.chip:hover { background: var(--chip); }
+.chip[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.group { display: grid; gap: 10px; }
+.group-title { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+.ctl { display: grid; gap: 5px; }
+.ctl-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ctl label { font-weight: 500; }
+.ctl output { color: var(--sub); font-variant-numeric: tabular-nums; }
+.panel input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 18px; background: transparent; margin: 0; cursor: pointer; }
+.panel input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: linear-gradient(to right, var(--ink) var(--pct, 50%), var(--track) var(--pct, 50%)); }
+.panel input[type="range"]::-moz-range-track { height: 4px; border-radius: 4px; background: var(--track); }
+.panel input[type="range"]::-moz-range-progress { height: 4px; border-radius: 4px; background: var(--ink); }
+.panel input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+.panel input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 2px solid #fff; }
+.panel input[type="range"]:focus-visible { outline: 2px solid #545454; outline-offset: 3px; border-radius: 4px; }
+.toggle { display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer; }
+.toggle input { appearance: none; -webkit-appearance: none; width: 30px; height: 18px; border-radius: 999px; background: var(--track); position: relative; cursor: pointer; transition: background .2s; flex: none; margin: 0; }
+.toggle input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform .2s; }
+.toggle input:checked { background: var(--ink); }
+.toggle input:checked::after { transform: translateX(12px); }
+.toggle input:focus-visible { outline: 2px solid #545454; outline-offset: 2px; }
+.map { position: relative; height: 104px; border-radius: 10px; background: rgba(0,0,0,.035); overflow: hidden; }
+.map i { position: absolute; display: block; box-sizing: border-box; }
+.map .m-card { background: rgba(0,0,0,.16); border-radius: 2px; }
+.map .m-bound { border: 1px dashed rgba(22,22,22,.3); border-radius: 4px; }
+.map .m-target { border: 1px dashed rgba(22,22,22,.4); border-radius: 3px; }
+.map .m-view { border: 1.5px solid #161616; border-radius: 3px; }
+.tip { display: block; margin: 0; font-size: 11.5px; line-height: 15px; color: var(--sub); max-height: 0; opacity: 0; overflow: hidden; transition: max-height .25s ease, opacity .2s ease, margin .25s ease; }
+.ctl:hover .tip, .ctl:focus-within .tip, .toggle:hover .tip, .toggle:focus-within .tip { max-height: 80px; opacity: 1; margin-top: 2px; }
+.toggle-text { display: grid; min-width: 0; }
+.group-title.with-btn { display: flex; align-items: center; justify-content: space-between; }
+.chip-mini { padding: 3px 9px; font-size: 11px; letter-spacing: 0; text-transform: none; }
+.orch { display: grid; gap: 5px; padding: 8px 0 14px; position: relative; }
+.o-row { display: grid; grid-template-columns: 52px 1fr 34px; align-items: center; gap: 8px; font-size: 11px; color: var(--sub); }
+.o-track { position: relative; height: 8px; border-radius: 4px; background: rgba(0,0,0,.06); overflow: hidden; }
+.o-track i { position: absolute; top: 0; bottom: 0; border-radius: 4px; background: var(--ink); opacity: .75; }
+.o-end { text-align: right; font-variant-numeric: tabular-nums; }
+.o-ticks { position: relative; height: 12px; margin-left: 60px; margin-right: 42px; font-size: 9px; color: var(--faint); }
+.o-ticks span { position: absolute; transform: translateX(-50%); }
+.panel-foot { display: flex; gap: 6px; }
+.panel-foot .chip { flex: 1; text-align: center; }
+.values { display: none; width: 100%; box-sizing: border-box; font: 11px/16px "SF Mono", ui-monospace, Menlo, monospace; color: var(--ink); background: #f5f5f5; border: 1px solid var(--line); border-radius: 8px; padding: 8px; resize: none; }
+.values.show { display: block; }
+.toast { font-size: 12px; color: var(--on); min-height: 16px; }
+@media (max-width: 720px) { .panel { left: 12px; right: 12px; bottom: 12px; width: auto; max-height: 60vh; } .panel.collapsed { left: auto; } }
+</style>
+</head>
+<body class="work-page">
+<header class="gnav" aria-label="Global"><a class="gnav-pill gnav-brand" href="index.html" aria-label="Mandy Liu — home"><img src="images/figma-logo-mark.png" alt=""/><span class="slash">/</span><span class="name">Mandy Liu</span></a><nav class="gnav-pill gnav-tabs" aria-label="Sections"><a class="gnav-tab is-active" href="index.html">Work</a><a class="gnav-tab" href="visual/index.html">Craft</a></nav><nav class="gnav-pill gnav-links" aria-label="Links"><a class="gnav-tab gnav-tab--icon" href="https://www.linkedin.com/in/mandyliu0924/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3ZM8 18C8.27614 18 8.5 17.7761 8.5 17.5V10.5C8.5 10.2239 8.27614 10 8 10H6.5C6.22386 10 6 10.2239 6 10.5V17.5C6 17.7761 6.22386 18 6.5 18H8ZM7.25 9C6.42157 9 5.75 8.32843 5.75 7.5C5.75 6.67157 6.42157 6 7.25 6C8.07843 6 8.75 6.67157 8.75 7.5C8.75 8.32843 8.07843 9 7.25 9ZM17.5 18C17.7761 18 18 17.7761 18 17.5V12.9C18.0325 11.3108 16.8576 9.95452 15.28 9.76C14.177 9.65925 13.1083 10.1744 12.5 11.1V10.5C12.5 10.2239 12.2761 10 12 10H10.5C10.2239 10 10 10.2239 10 10.5V17.5C10 17.7761 10.2239 18 10.5 18H12C12.2761 18 12.5 17.7761 12.5 17.5V13.75C12.5 12.9216 13.1716 12.25 14 12.25C14.8284 12.25 15.5 12.9216 15.5 13.75V17.5C15.5 17.7761 15.7239 18 16 18H17.5Z"/></svg></a><a class="gnav-tab" href="files/Mandy-Liu-Resume-2026.pdf" target="_blank" rel="noopener">Resume</a><a class="gnav-tab gnav-tab--tight" href="about/index.html">About</a></nav></header>
+
+<section class="work-hero">
+  <h1 class="hero-title"><em class="ac">Mandy</em> is a Product designer crafting novel products out of ambiguity. Previously, she designed for <em class="ac"><span class="ac-google">Google</span>, Adobe, TikTok</em>, and start-ups and is now doing her Earned her BFA Graphic Design @ <em class="ac">RISD</em>, doing her Masters of Design @ <em class="ac">UC Berkeley</em>.</h1>
+  <p class="work-sub">Currently based in <img class="pin" src="images/figma-pin-location.svg" alt=""/> Bay Area | Graduating December 2026</p>
+  <span class="hero-fish" aria-hidden="true"><i class="hero-fish-tile"><img src="images/658a52ab40527efa984d7285_ezgif.com-resize-633a5b.gif" alt=""/></i></span>
+</section>
+
+<section class="canvas-field" id="field" aria-label="Selected work">
+  <div class="work-index-wrap"><nav class="work-index" id="workIndex" aria-label="Projects"><button type="button" data-card="google">Google</button><button type="button" data-card="adobe">Adobe</button><button type="button" data-card="tiktok">Tiktok</button><button type="button" data-card="hedra">Hedra.ai</button><button type="button" data-card="ipsos">Ipsos Facto</button><button type="button" data-card="breakfree">BreakFree</button><button type="button" data-card="knoll">Knoll Website</button><button type="button" data-card="moodorb">Mood.orb</button></nav></div>
+  <div class="work-plane" id="plane">
+    <div data-href="work/google-internship/index.html" class="work-card has-cover c1 google" style="--t:#1258cc;--s:#4074ce;--x:414;--y:0;--w:453"><img class="cover" decoding="async" src="images/covers/r1c1.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/google.png" alt="Google Internship"/><div class="card-text"><p class="card-title">Google Internship</p><p class="card-sub">Gemini voice experience on home smart display</p></div></div></div></div>
+    <div data-href="work/hedraworld/index.html" class="work-card has-cover c2 hedra" style="--t:#fff3fa;--s:#ffffff;--x:907;--y:0;--w:720"><img class="cover" decoding="async" src="images/covers/r1c2.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/hedra.png" alt="Hedra.ai Creator"/><div class="card-text"><p class="card-title">Hedra.ai Creator</p><p class="card-sub">Creator’s tool  ·  Reimagine content creation & manipulation with Gen-AI</p></div></div></div></div>
+    <div data-href="work/tiktok-internship/index.html" class="work-card has-cover c3 tiktok" style="--t:#ffffff;--s:#ffffff;--x:1667;--y:0;--w:453"><img class="cover" decoding="async" src="images/covers/r1c3.png" alt=""/><div class="cover-slides" aria-hidden="true"><i class="slides-bg bg2 tt-anim"></i><i class="slides-bg bg3 tt-anim"></i><div class="slides-track tt-anim"><div class="slot"><img class="tt-anim p0" src="images/covers/tiktok/feed-1.png" alt="" decoding="async"/></div><div class="slot"><img class="tt-anim p1" src="images/covers/tiktok/feed-2.png" alt="" decoding="async"/></div><div class="slot"><img class="tt-anim p2" src="images/covers/tiktok/feed-3.png" alt="" decoding="async"/></div><div class="slot"><img class="tt-anim p3" src="images/covers/tiktok/feed-1.png" alt="" decoding="async"/></div></div></div><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/tiktok.png" alt="TikTok Internship"/><div class="card-text"><p class="card-title tt-anim tt-ink">TikTok Internship</p><p class="card-sub tt-anim tt-ink">LIVE Safety, Direct messaging, and STEM Feed</p></div></div></div></div>
+    <div data-href="work/adobe-internship/index.html" class="work-card has-cover c1 adobe" style="--t:#2224a2;--s:#4b4b9c;--x:0;--y:540;--w:720"><img class="cover" decoding="async" src="images/covers/r2c1.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/adobe.png" alt="Adobe Internship | Firefly Video Editor"/><div class="card-text"><p class="card-title">Adobe Internship | Firefly Video Editor</p><p class="card-sub">Prompt-driven video restyling inside Adobe Firefly</p></div></div></div></div>
+    <div data-href="work/mood-orb/index.html" class="work-card has-cover c2 moodorb" style="--t:#ffffff;--s:#ffffff;--x:760;--y:540;--w:554"><img class="cover" decoding="async" src="images/covers/r2c2.png" alt=""/><video class="cover-video" src="files/moodorb-hover.mp4" muted loop playsinline preload="metadata" aria-hidden="true"></video><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/moodorb.png" alt="Mood.orb"/><div class="card-text"><p class="card-title">Mood.orb</p><p class="card-sub">Mood journal connected to your physiological signals</p></div></div></div></div>
+    <div data-href="ipsos-facto/index.html" class="work-card has-cover c3 ipsos" style="--t:#ffffff;--s:#ffffff;--x:1354;--y:540;--w:720"><img class="cover" decoding="async" src="images/covers/r2c3.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/ipsos.png" alt="Ipsos Facto"/><div class="card-text"><p class="card-title">Ipsos Facto</p><p class="card-sub">B2B  ·  Prompt library for an internal research chat assistant</p></div></div></div></div>
+    <div class="work-card has-cover c1 knoll" style="--t:#555555;--s:#555555;--x:119;--y:1080;--w:733"><img class="cover" decoding="async" src="images/covers/r3c1.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/knoll.png" alt="Knoll"/><div class="card-text"><p class="card-sub">Revitalizing Knoll Research library website & design system</p></div></div></div></div>
+    <div data-href="https://mandyliu.webflow.io/work/flow" class="work-card has-cover c2 ipsos-ds" style="--t:#005758;--s:#005758;--x:892;--y:1080;--w:733"><img class="cover" decoding="async" src="images/covers/r3c2.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/ipsos-ds.png" alt="Ipsos Flow"/><div class="card-text"><p class="card-title">Ipsos Flow</p><p class="card-sub">Design system  ·  Complex enterprise resource planning platform</p></div></div></div></div>
+    <div data-href="breakfree/index.html" class="work-card has-cover c3 breakfree" style="--t:#000000;--s:#000000;--x:1665;--y:1080;--w:455"><img class="cover" decoding="async" src="images/covers/r3c3.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/breakfree.png" alt="BreakFree"/><div class="card-text"><p class="card-title">BreakFree</p><p class="card-sub">Redesign behavior training app for better market fit</p></div></div></div></div>
+  </div>
+  <div class="target-dot" id="targetDot"></div>
+</section>
+
+<div class="open-veil" id="openVeil"></div>
+<aside class="open-info" id="openInfo" role="dialog" aria-label="Project" aria-hidden="true">
+  <div class="oi-count" id="oiCount"></div>
+  <h2 id="oiTitle"></h2>
+  <p id="oiSub"></p>
+  <div class="oi-actions"><a class="oi-btn" id="oiLink" href="#">Read case study</a><span class="oi-soon" id="oiSoon">Case study coming soon</span><button class="oi-btn ghost" id="oiClose" type="button">Close</button></div>
+</aside>
+
+<footer class="site-foot">
+  <div class="foot-art-wrap" id="footWrap"><pre class="foot-art" id="footArt" aria-label="ASCII drawing of the two hands from Michelangelo's Creation of Adam">__FOOTER_ART__</pre></div>
+  <p class="foot-line"><span class="lead">Lets make <em>Great</em> things happen</span><span class="links"><a href="about/index.html">About<img src="images/arrow-top-right.svg" width="24" height="24" alt=""/></a><a href="https://www.linkedin.com/in/mandyliu0924/" target="_blank" rel="noopener">Linkedin<img src="images/arrow-top-right.svg" width="24" height="24" alt=""/></a><a href="mailto:mandy020924@gmail.com">Email<img src="images/arrow-top-right.svg" width="24" height="24" alt=""/></a></span></p>
+</footer>
+<p class="foot-row"><span>&copy;2026 Mandy Liu</span><span>Designed and coded by Mandy Liu</span><a href="mailto:mandy020924@gmail.com">mandy020924@gmail.com</a></p>
+
+<aside class="panel collapsed" id="panel" aria-label="Motion tuning">
+  <div class="panel-head" id="panelHead">
+    <span class="status" id="status" data-state="rest"><i></i><span id="statusText">Resting</span></span>
+    <button class="icon-btn" id="collapseBtn" type="button" aria-expanded="false" aria-controls="panelBody" title="Open motion panel">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10l4-4 4 4"/></svg>
+    </button>
+  </div>
+  <div class="panel-body" id="panelBody">
+    <div class="readout" id="readout"></div>
+    <div class="presets" id="presets" role="group" aria-label="Presets"></div>
+    <div id="controls" style="display: grid; gap: 14px;"></div>
+    <div class="group">
+      <div class="group-title">Grid area</div>
+      <div class="map" id="map" aria-hidden="true"></div>
+    </div>
+    <div class="panel-foot">
+      <button class="chip" id="introBtn" type="button">Replay entrance</button>
+      <button class="chip" id="resetBtn" type="button">Reset</button>
+      <button class="chip" id="copyBtn" type="button">Copy values</button>
+    </div>
+    <textarea class="values" id="values" rows="7" readonly aria-label="Current values"></textarea>
+    <div class="toast" id="toast" role="status"></div>
+  </div>
+</aside>
+
+<script src="js/site-fx.js"></script>
+<script>
+(function () {
+  // Layout from Figma frame 2147236915 in design px: each card carries its --x / --y / --w; 40px gaps, row 2 leftmost, rows 1 and 3 right-aligned.
+  // The grid lives in the page flow: vertical movement is page scroll, only horizontal movement belongs to the canvas.
+  const CANVAS_W = 2120, CANVAS_H = 1580, CARD_H = 500, PAD = 40, DESIGN = 1730, BAND = 70;
+  const cssPx = (name, fb) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || fb;
+  const MAX_W = cssPx('--max-w', 2560), CANVAS_MAX_W = cssPx('--canvas-max-w', 1730);   // css/work.css: the page stops scaling at --max-w, the card canvas already at --canvas-max-w
+  const INSET = { top: 104, bottom: 104, side: 40 };   // kept clear when a card is revealed: the nav and the 100px blurred edges, plus the gutter at the sides
+  const REST = 12, SETTLED = 120;                     // resting = pointer within 12px, canvas slower than 120 px/s
+
+  const DEFAULTS = { delay: 0, glide: 1600, speed: 1650, overshoot: 0, edge: 45, curve: 1.65, margin: 160, assist: 700, assistZone: 26, carry: 70, dwell: 300, centring: 50, focusGlide: 1500, yieldAt: 15,
+                     intro: true, introDelay: 0, introScale: 2, introMs: 1300, stagger: 50, focusPx: 10, h1Delay: 150, h1Ms: 1100, h1Blur: 14, h1Stagger: 200, h1Unit: 'line', subDelay: 550, subMs: 900, subBlur: 14, fishDelay: 1100, fishMs: 700, open: true,
+                     reveal: true, returnHome: true, drag: true, showTarget: false, fit: false,
+                     // Header type, in Figma's 1730px frame (169:18982, heading revised to 46/74 at -0.75%, subtitle 26/32): heading #989898 Book, serif accents #545454, subtitle 24/32 #989898, 20px gap, 77px from the top.
+                     // These are the panel's reset point only: the site takes them from css/work.css, which the panel overrides live with ?tune.
+                     heroTop: 67, h1Size: 46, h1Lh: 68, h1Track: -0.75, h1Weight: 400, h1Grey: 152, acSize: 100, acWeight: 400, acGrey: 84, subSize: 26, subLh: 32, subGap: 20, subGrey: 152, subAlpha: 100 };
+  const TYPE_KEYS = ['heroTop', 'h1Size', 'h1Lh', 'h1Track', 'h1Weight', 'h1Grey', 'acSize', 'acWeight', 'acGrey', 'subSize', 'subLh', 'subGap', 'subGrey', 'subAlpha'];
+  const PRESETS = {
+    Mandy:     { delay: 0,   glide: 1600, speed: 1650, overshoot: 0,    edge: 45, curve: 1.65, margin: 160, assist: 700,  assistZone: 26, carry: 70, dwell: 300, centring: 50, focusGlide: 1500 },
+    Gentle:    { delay: 60,  glide: 800,  speed: 1300, overshoot: 0,    edge: 22, curve: 1.8,  margin: 120, assist: 450,  assistZone: 20, dwell: 300, focusGlide: 500 },
+    Snappy:    { delay: 0,   glide: 380,  speed: 3200, overshoot: 0.12, edge: 35, curve: 1.15, margin: 100, assist: 1200, assistZone: 30, dwell: 160, focusGlide: 380 },
+    Floaty:    { delay: 220, glide: 1900, speed: 800,  overshoot: 0.18, edge: 18, curve: 1.9,  margin: 180, assist: 600,  assistZone: 28, dwell: 420, focusGlide: 900 },
+  };
+  const SLIDERS = [
+    { group: 'Sideways glide', key: 'delay',      label: 'Delay', tip: "Wait before the canvas reacts. Higher feels heavier and lazier.",          min: 0,   max: 600,  step: 10,   fmt: (v) => v + ' ms' },
+    { group: 'Sideways glide', key: 'glide',      label: 'Glide time', tip: "How long it takes to settle. Higher is softer and floatier, lower is tighter.",     min: 100, max: 3000, step: 50,   fmt: (v) => v + ' ms' },
+    { group: 'Sideways glide', key: 'speed',      label: 'Top speed', tip: "Fastest the canvas may move. Lower keeps big pointer jumps calm.",      min: 200, max: 5000, step: 50,   fmt: (v) => v + ' px/s' },
+    { group: 'Sideways glide', key: 'overshoot',  label: 'Overshoot', tip: "How far the sideways glide swings past its target. 0 stops cleanly, higher adds bounce.",      min: 0,   max: 0.6,  step: 0.02, fmt: (v) => Math.round(v * 100) + '%' },
+    { group: 'Reach',          key: 'edge',       label: 'Edge zone', tip: "How far in from the edge the pull maxes out. Higher reaches the far cards sooner.",      min: 0,   max: 60,   step: 1,    fmt: (v) => v + '%' },
+    { group: 'Reach',          key: 'curve',      label: 'Curve', tip: "Shape of the pull from centre to edge. Higher keeps the centre still, lower reacts right away.",          min: 0.5, max: 3,    step: 0.05, fmt: (v) => (+v).toFixed(2) },
+    { group: 'Reach',          key: 'margin',     label: 'Side margin', tip: "Empty space kept left and right of the outer cards. Sets how far sideways you can travel.",    min: 0,   max: 400,  step: 10,   fmt: (v) => v + ' px' },
+    { group: 'Scroll help',    key: 'assist',     label: 'Scroll speed', tip: "Top speed of the automatic page scroll when the pointer nears the top or bottom of the screen. 0 turns it off.",   min: 0,   max: 2000, step: 50,   fmt: (v) => +v === 0 ? 'off' : v + ' px/s' },
+    { group: 'Scroll help',    key: 'assistZone', label: 'Scroll zone', tip: "How far from the top and bottom of the screen the scroll help begins. It ramps up smoothly from zero.",    min: 5,   max: 45,   step: 1,    fmt: (v) => v + '%' },
+    { group: 'Scroll help',    key: 'carry',      label: 'Past the grid', tip: "When pointer-led scrolling takes you past the top or bottom of the grid, the page carries on to the header or footer at no less than this share of the scroll speed. Off stops at the grid's edge.",  min: 0,   max: 100,  step: 5,    fmt: (v) => +v === 0 ? 'off' : v + '% speed' },
+    { group: 'Focus',          key: 'dwell',      label: 'Dwell to focus', tip: "How long the pointer must rest on a card before the card moves into view. Lower is eager, 0 turns it off.", min: 0,   max: 1200, step: 20,   fmt: (v) => +v === 0 ? 'off' : v + ' ms' },
+    { group: 'Focus',          key: 'centring',   label: 'Settle toward centre', tip: "How far a revealed card is drawn toward the middle of the screen. 0 stops as soon as it is fully in view, 100 centres it like a click.", min: 0, max: 100, step: 5, fmt: (v) => +v === 0 ? 'just in view' : +v === 100 ? 'centred' : v + '%' },
+    { group: 'Focus',          key: 'focusGlide', label: 'Focus glide', tip: "How long the move to a revealed or centred project takes.",    min: 120, max: 2000, step: 20,   fmt: (v) => v + ' ms' },
+    { group: 'Focus',          key: 'yieldAt',    label: 'Scroll wins above', tip: "Inside a scroll zone, resting on a card still works until the scroll help passes this share of its speed. 0 means scrolling always wins there.", min: 0, max: 100, step: 5,    fmt: (v) => v + '% speed' },
+  ];
+  SLIDERS.push(
+    { group: 'Orchestration', key: 'introDelay', label: 'Grid · starts',  tip: "When the first card starts arriving, from page load.", min: 0, max: 2000, step: 50, fmt: (v) => v + ' ms' },
+    { group: 'Orchestration', key: 'introMs',    label: 'Grid · takes',   tip: "How long each card's trip lasts. It eases out, so most of the travel happens early.", min: 300, max: 2600, step: 50, fmt: (v) => v + ' ms' },
+    { group: 'Orchestration', key: 'stagger',    label: 'Grid · gap between cards', tip: "How much later each next card starts. The cards nearest the top centre go first. 0 moves them all as one piece.", min: 0, max: 300, step: 5, fmt: (v) => v + ' ms' },
+    { group: 'Orchestration', key: 'introScale', label: 'Grid · cards start at', tip: "How close to you the cards start. 200% means twice their size, pushed outward like a zoomed-in camera, shrinking back into place.", min: 1, max: 3, step: 0.05, fmt: (v) => Math.round(v * 100) + '%' },
+    { group: 'Orchestration', key: 'focusPx',    label: 'Grid · out of focus', tip: "How blurred each card is while it is still close to the camera. It sharpens as it lands. 0 keeps the cards sharp throughout.", min: 0, max: 30, step: 1, fmt: (v) => +v === 0 ? 'sharp' : v + ' px' },
+    { group: 'Orchestration', key: 'h1Delay',    label: 'Header · starts', tip: "When the heading begins to blur in, from page load.", min: 0, max: 3000, step: 50, fmt: (v) => v + ' ms' },
+    { group: 'Orchestration', key: 'h1Ms',       label: 'Header · takes',  tip: "How long the heading's blur-in lasts: the speed of the blur-in.", min: 200, max: 3000, step: 50, fmt: (v) => v + ' ms' },
+    { group: 'Orchestration', key: 'h1Blur',     label: 'Header · blur',   tip: "How blurred the heading starts.", min: 0, max: 40, step: 1, fmt: (v) => v + ' px' },
+    { group: 'Orchestration', key: 'h1Stagger',  label: 'Header · ripple gap', tip: "Gap between one line (or word) rising into place and the next, while the block blurs in whole (after daybreak.studio). By lines, the subtitle is the line after the last one. 0 brings each block in as one piece.", min: 0, max: 400, step: 5, fmt: (v) => +v === 0 ? 'off · whole block' : v + ' ms' },
+    { group: 'Orchestration', key: 'subDelay',   label: 'Subtitle · starts', tip: "When the subtitle begins to blur in, from page load. It can overlap the heading.", min: 0, max: 3000, step: 50, fmt: (v) => v + ' ms' },
+    { group: 'Orchestration', key: 'subMs',      label: 'Subtitle · takes',  tip: "How long the subtitle's blur-in lasts.", min: 200, max: 3000, step: 50, fmt: (v) => v + ' ms' },
+    { group: 'Orchestration', key: 'subBlur',    label: 'Subtitle · blur',   tip: "How blurred the subtitle starts.", min: 0, max: 40, step: 1, fmt: (v) => v + ' px' },
+    { group: 'Orchestration', key: 'fishDelay',  label: 'Fish tile · starts', tip: "When the fish tile fades in, from page load.", min: 0, max: 3000, step: 50, fmt: (v) => v + ' ms' },
+    { group: 'Orchestration', key: 'fishMs',     label: 'Fish tile · takes',  tip: "How long the fish tile's fade lasts.", min: 100, max: 2000, step: 50, fmt: (v) => v + ' ms' });
+  // Header type: sizes are in Figma's 1730px frame and scale with the window like the site's CSS, so the readout also shows the size in this window
+  const hex = (g) => '#' + ('0' + Math.round(g).toString(16)).slice(-2).repeat(3);
+  const here = (el, prop) => { const n = el && parseFloat(getComputedStyle(el)[prop]); return n ? ' → ' + Math.round(n) + 'px' : ''; };
+  SLIDERS.push(
+    { group: 'Header type', key: 'heroTop', label: 'Top padding',           tip: "Space from the top of the page to the heading. 77 clears the nav with a 20px gap. The fish tile moves with it.", min: 40, max: 160, step: 1, fmt: (v) => v + ' px' },
+    { group: 'Header type', key: 'h1Size',  label: 'Heading · size',        tip: "Type size in the 1730px Figma frame. On the site it scales with the window, so the arrow shows the size in this window.", min: 28, max: 72, step: 1, fmt: (v) => v + here(h1El, 'fontSize') },
+    { group: 'Header type', key: 'h1Lh',    label: 'Heading · line height', tip: "Line height in the same frame. It is kept as a ratio of the size, so the two scale together.", min: 32, max: 110, step: 1, fmt: (v) => v + ' · ' + (v / P.h1Size).toFixed(2) + here(h1El, 'lineHeight') },
+    { group: 'Header type', key: 'h1Track', label: 'Heading · tracking',    tip: "Letter spacing as a share of the size, like Figma's %. Negative is tighter.", min: -4, max: 4, step: 0.25, fmt: (v) => (v > 0 ? '+' : '') + v + '%' },
+    { group: 'Header type', key: 'h1Grey',  label: 'Heading · grey',        tip: "The heading's grey, from black to light. 152 is the design's #989898.", min: 20, max: 220, step: 1, fmt: (v) => v + ' · ' + hex(v) },
+    { group: 'Header type', key: 'acSize',  label: 'Accents · size',        tip: "The italic serif words (Mandy, Google, Adobe, TikTok, RISD, UC Berkeley) relative to the heading. The serif looks smaller than the sans at the same size.", min: 80, max: 130, step: 1, fmt: (v) => v + '%' },
+    { group: 'Header type', key: 'acGrey',  label: 'Accents · grey',        tip: "The accents' grey. 84 is the design's #545454.", min: 0, max: 200, step: 1, fmt: (v) => v + ' · ' + hex(v) },
+    { group: 'Header type', key: 'subSize', label: 'Subtitle · size',       tip: "Subtitle size in the 1730px frame; the pin icon matches it.", min: 14, max: 40, step: 1, fmt: (v) => v + here(subEl, 'fontSize') },
+    { group: 'Header type', key: 'subLh',   label: 'Subtitle · line height', tip: "Subtitle line height in the same frame, kept as a ratio of its size.", min: 16, max: 60, step: 1, fmt: (v) => v + ' · ' + (v / P.subSize).toFixed(2) + here(subEl, 'lineHeight') },
+    { group: 'Header type', key: 'subGap',  label: 'Subtitle · gap above',  tip: "Space between the heading and the subtitle, in the 1730px frame.", min: 0, max: 60, step: 1, fmt: (v) => v + here(subEl, 'marginTop') },
+    { group: 'Header type', key: 'subGrey', label: 'Subtitle · grey',       tip: "The subtitle's grey. 152 is #989898, the same as the heading.", min: 20, max: 220, step: 1, fmt: (v) => v + ' · ' + hex(v) },
+    { group: 'Header type', key: 'subAlpha', label: 'Subtitle · opacity',   tip: "How solid the subtitle is once it has blurred in. Figma has it at 80%; the site has been landing it at 100%.", min: 30, max: 100, step: 5, fmt: (v) => v + '%' });
+  const CHIPS = {   // chip rows, each placed before the slider named: the faces the site loads for each family, and the ripple's unit
+    h1Weight: { label: 'Heading · weight', before: 'h1Grey', opts: [[400, 'Book'], [500, 'Medium'], [700, 'Bold']] },
+    acWeight: { label: 'Accents · weight', before: 'acGrey', opts: [[200, 'Ultralight'], [400, 'Regular'], [700, 'Ultrabold']] },
+    h1Unit:   { label: 'Header · ripple by', before: 'subDelay', opts: [['word', 'Words'], ['line', 'Lines']] },
+  };
+  const TOGGLES = [
+    { key: 'intro',      label: 'Entrance on load', tip: "When the page loads, every card starts close to you and falls back into place, each on its own clock." },
+    { key: 'open',       label: 'Click opens the project', tip: "On: a click goes to the project's case study; a project without one yet grows into place and shows its details. Off: a click centres the card." },
+    { key: 'reveal',     label: 'Rest reveals, click centres', tip: "On: resting moves the card by the \"Settle toward centre\" amount. Off: resting centres the card, like a click." },
+    { key: 'returnHome', label: 'Return home on leave', tip: "Glide back to the starting layout when the pointer leaves the grid." },
+    { key: 'drag',       label: 'Grab and throw', tip: "Drag to pan directly, release to coast." },
+    { key: 'showTarget', label: 'Show pointer target', tip: "Mark where the pointer is, so you can see the lag." },
+    { key: 'fit',        label: 'Fit whole grid', tip: "Shrink everything to see the full grid area at once." },
+  ];
+  const SIM = __SIM__;                                                         // true in the artifact build, false on the site
+  const q = new URLSearchParams(location.search), TUNE = SIM || q.has('tune');   // the Motion panel: always in the artifact, ?tune on the site
+  const STORE = 'work-grid-canvas-params-v4', STORE_UI = 'work-grid-canvas-ui-v4';
+  const load = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+  const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+  const P = Object.assign({}, DEFAULTS, TUNE ? (load(STORE) || {}) : {}); P.fit = false;   // without the panel the page always uses DEFAULTS above
+  if (q.has('fit')) P.fit = true;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const nextFrame = q.has('timer') ? (cb) => setTimeout(() => cb(performance.now()), 16) : (cb) => requestAnimationFrame(cb);   // ?timer keeps the motion running in a hidden tab, for testing
+
+  const $ = (id) => document.getElementById(id);
+  const field = $('field'), plane = $('plane'), panel = $('panel'), map = $('map'), dot = $('targetDot');
+  const status = $('status'), statusText = $('statusText'), readout = $('readout');
+
+  panel.hidden = !TUNE;
+  if (SIM) document.addEventListener('click', (e) => { const a = e.target.closest('a'); if (a && !panel.contains(a)) e.preventDefault(); });   // simulation: links go nowhere
+
+  /* ---------- cards come from the real markup ---------- */
+  const cards = Array.prototype.map.call(plane.querySelectorAll('.work-card'), (el) => { el.tabIndex = 0;
+    const title = el.querySelector('.card-title'), icon = el.querySelector('.card-icon'), name = title ? title.textContent.trim() : (icon && icon.alt) || 'Project'; el.setAttribute('aria-label', name);
+    return { el, x: +el.style.getPropertyValue('--x') || 0, y: +el.style.getPropertyValue('--y') || 0, w: +el.style.getPropertyValue('--w') || 453, name, L: 0, T: 0, cw: 0, ch: 0 }; });
+  cards.forEach((c, i) => c.el.addEventListener('focus', () => { if (!P.fit && c.el.matches(':focus-visible')) focusCard(i, true); }));
+  // the project index: each name is tied to its card by the card's class; hovering (or tabbing to) a name reveals that card, clicking opens it
+  const index = document.getElementById('workIndex');
+  if (index) Array.prototype.forEach.call(index.querySelectorAll('button'), (b, n) => {
+    const i = cards.findIndex((c) => c.el.classList.contains(b.dataset.card)); b.style.setProperty('--i', n); if (i < 0) { b.hidden = true; return; } b.dataset.i = i;
+    const show = () => { if (st.open >= 0 || P.fit) return; b.classList.add('is-on'); cards[i].el.classList.add('is-hover'); };
+    const hide = () => { b.classList.remove('is-on'); if (st.focus !== i) cards[i].el.classList.remove('is-hover'); };
+    b.addEventListener('mouseenter', show); b.addEventListener('mouseleave', hide);
+    b.addEventListener('focus', () => { if (b.matches(':focus-visible')) show(); }); b.addEventListener('blur', hide);
+    b.addEventListener('click', () => { if (P.fit) return; if (st.open >= 0) { closeCard(); return; }
+      if (st.focus === i && st.focusKind === 'centre') { if (P.open) { st.cx = null; openCard(i); } return; }   // already centred: open it
+      st.cx = null; focusCard(i, true); });                                                                    // centre the card in the window; the canvas lets go once the pointer moves on
+  });
+
+  /* ---------- geometry: design px, scaled as one; the field is as tall as the grid ---------- */
+  let W = 0, s = 1, FH = 0, B = { x0: 0, x1: 0 }, lim = { l: 0, r: 0 }, fit = { k: 1, tx: 0 };
+  function layout() {
+    W = field.clientWidth; s = Math.max(0.45, Math.min(CANVAS_MAX_W, W) / DESIGN); // the canvas keeps the Figma frame's proportion up to the design width, then holds, centred in the full width
+    document.documentElement.style.setProperty('--k', s.toFixed(4));
+    const ox = (W / s - CANVAS_W) / 2;
+    let minL = Infinity, maxR = -Infinity;
+    cards.forEach((c) => {
+      const Ld = ox + c.x, Td = PAD + c.y;
+      c.el.style.left = Ld + 'px'; c.el.style.top = Td + 'px'; c.el.style.width = c.w + 'px';
+      c.L = Ld * s; c.T = Td * s; c.cw = c.w * s; c.ch = CARD_H * s;
+      minL = Math.min(minL, c.L); maxR = Math.max(maxR, c.L + c.cw);
+    });
+    const m = +P.margin;
+    B = { x0: Math.min(0, minL - m), x1: Math.max(W, maxR + m) };          // sideways limits only; up and down is the page
+    lim = { l: -B.x0, r: B.x1 - W }; st.ext = { l: lim.l, r: lim.r };
+    fit.k = Math.min(1, W / (B.x1 - B.x0) * 0.96); fit.tx = W / 2 - fit.k * (B.x0 + B.x1) / 2;
+    FH = (CANVAS_H + PAD * 2) * s * (P.fit ? fit.k : 1); field.style.height = FH + 'px';
+    st.x = clamp(st.x, -lim.r, lim.l);
+    if (st.focus >= 0) st.focusTx = st.focusKind === 'reveal' ? revealX(st.focus) : focusX(st.focus);
+    buildMap(); kick();
+  }
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  const rubber = (v, pos, neg) => v > pos ? pos + (v - pos) * 0.35 : v < -neg ? -neg + (v + neg) * 0.35 : v;
+
+  /* ---------- sideways pull: continuous from the centre, no thresholds ---------- */
+  function pull(v) { const full = Math.max(0.05, 1 - P.edge / 100), u = Math.min(1, v / full), eased = 1 - (1 - u) * (1 - u); return Math.pow(eased, +P.curve); }
+  function mappedX(clientX) { const nx = (clientX - W / 2) / (W / 2), f = pull(Math.min(1, Math.abs(nx))); return nx < 0 ? lim.l * f : -lim.r * f; }
+
+  /* ---------- scroll help: ramps up smoothly from zero as the pointer nears the top or bottom of the screen ---------- */
+  function assistAt(clientY) {
+    if (!(+P.assist > 0) || clientY == null) return 0;
+    const vh = innerHeight, z = P.assistZone / 100, dTop = clientY / vh, dBot = (vh - clientY) / vh;
+    let u = 0, dir = 0; if (dBot < z) { u = 1 - dBot / z; dir = 1; } else if (dTop < z) { u = 1 - dTop / z; dir = -1; }
+    if (!dir) return 0; u = Math.max(0, Math.min(1, u)); const sm = u * u * (3 - 2 * u);
+    return dir * +P.assist * Math.pow(sm, 1.5);
+  }
+  // The scroll help only outranks resting on a card where it is really moving the page: past the hand-over speed, and not at the very top or bottom of the page.
+  function assistNow() { const a = assistAt(st.cy); return a && (a < 0 ? window.scrollY <= 0 : window.scrollY >= maxScroll() - 1) ? 0 : a; }
+  function assistBusy() { return Math.abs(assistNow()) > +P.assist * P.yieldAt / 100; }
+  // Past the grid: once pointer-led scrolling has taken the pointer over the top or bottom edge of the grid, the page carries on to the header or the footer,
+  // so there is no moment where the help stops and the wheel has to take over. -1 = back to the header, 1 = on to the footer, 0 = nothing to carry.
+  function carryDir() {
+    if (!(+P.carry > 0) || !st.engaged || st.cy == null || !st.onPage || st.overChrome || st.overPanel || P.fit || st.mode === 'drag' || st.mode === 'coast' || st.mode === 'open') return 0;
+    const b = field.getBoundingClientRect(), side = st.cy < b.top ? -1 : st.cy > b.bottom ? 1 : 0;
+    return side && Math.sign(assistNow()) === side ? side : 0;
+  }
+  function localPtr() { if (st.cx == null) return null; const b = field.getBoundingClientRect(); return { x: st.cx - b.left, y: st.cy - b.top }; }
+  function hitTest() { const p = localPtr(); if (!p) return -1; const x = p.x - st.x, y = p.y;
+    for (let i = cards.length - 1; i >= 0; i--) { const c = cards[i]; if (x >= c.L && x <= c.L + c.cw && y >= c.T && y <= c.T + c.ch) return i; } return -1; }
+
+  /* ---------- state ---------- */
+  var st = { x: 0, vx: 0, pan: 0, panV: 0, m: 0, hist: [], mode: 'rest', inside: false, overPanel: false, drag: null, raf: 0, last: 0, cx: null, cy: null,
+             suppressClick: false, focus: -1, focusFrom: null, focusTx: 0, focusKind: 'centre', dwellTimer: 0, dwellIdx: -1, dwellAt: null, av: 0, acc: 0, scrollV: 0, scrollTarget: null, lastWheel: 0,
+             ext: { l: 0, r: 0 }, engaged: false, onPage: true, overChrome: false, wheelAt: null, carrySince: 0 };
+  function record(e) { st.hist.push(e); if (st.hist.length > 400) st.hist.splice(0, st.hist.length - 400); kick(); }
+  function kick() { if (!st.raf) { st.last = performance.now(); st.raf = nextFrame(frame); } }
+  const maxScroll = () => Math.max(0, document.documentElement.scrollHeight - innerHeight);
+  // Every page scroll this script makes goes through setScroll, so it always knows where it put the page (own.y), when (own.at),
+  // and when the user last scrolled by their own means (own.user). Safari can snap the page back to an older position just after scripted
+  // scrolling stops; the scroll listener uses these to notice that and put the page back.
+  const own = { y: null, at: 0, user: 0 };
+  function setScroll(y) { own.y = clamp(y, 0, maxScroll()); own.at = performance.now(); window.scrollTo(0, own.y); }
+  function pageY() { return own.y != null && performance.now() - own.at < 120 ? own.y : window.scrollY; }   // our own figure while we are driving: Safari's scrollY can lag a few frames
+  function scrollByAcc(dy) { st.acc += dy; const whole = st.acc < 0 ? Math.ceil(st.acc) : Math.floor(st.acc); if (whole) { setScroll(pageY() + whole); st.acc -= whole; } }
+
+  /* ---------- hold a project: a click centres it, resting on it reveals it with the smallest move that shows all of it ---------- */
+  // A held card may sit past the side limits (st.ext widens to let it). The pointer can lead the canvas back in, never push it further out.
+  function focusX(i) { const c = cards[i]; return W / 2 - (c.L + c.cw / 2); }
+  // The band a revealed card settles into: at 0 it stops as soon as it is clear of the nav and the blurred edges, at 100 it lands dead centre.
+  function band(c) { const k = P.centring / 100;
+    return { edge: INSET.top + Math.max(0, (innerHeight - c.ch) / 2 - INSET.top) * k, side: INSET.side + Math.max(0, (W - c.cw) / 2 - INSET.side) * k }; }
+  // Resting only moves a card that is cut off by the screen edge, the nav or the blurred bands. A card already in full view stays where it is:
+  // no sideways settle if it is whole left-to-right, no page scroll if it is whole top-to-bottom.
+  function revealX(i) {   // measured from where the glide would come to rest, so the canvas eases to a stop instead of swinging back
+    const c = cards[i], b = band(c), w = 6 / Math.max(0.1, P.focusGlide / 1000), base = clamp(st.x + st.vx / w, -st.ext.r, st.ext.l);
+    if (c.L + base >= INSET.side && c.L + c.cw + base <= W - INSET.side) return base;   // whole left-to-right already
+    const lo = b.side - c.L, hi = W - b.side - c.L - c.cw;                          // the card sits inside the band while lo <= x <= hi
+    return lo > hi ? W / 2 - (c.L + c.cw / 2) : clamp(base, lo, hi);
+  }
+  function revealScroll(i) {
+    const c = cards[i], b = band(c), top = field.getBoundingClientRect().top + c.T, bottom = top + c.ch, room = innerHeight - b.edge * 2; let dy = 0;
+    if (top >= INSET.top && bottom <= innerHeight - INSET.bottom) return null;     // whole top-to-bottom already
+    if (c.ch > room) dy = (top + bottom) / 2 - innerHeight / 2;                     // taller than the band: centre it
+    else if (top < b.edge) dy = top - b.edge;
+    else if (bottom > innerHeight - b.edge) dy = bottom - (innerHeight - b.edge);
+    return Math.abs(dy) < 1 ? null : clamp(window.scrollY + dy, 0, maxScroll());
+  }
+  function unmark() { if (st.focus >= 0) cards[st.focus].el.classList.remove('is-focus', 'is-hover'); }
+  function focusCard(i, fromKeyboard, reveal) {
+    const kind = reveal ? 'reveal' : 'centre';
+    if (st.open >= 0 || P.fit || i < 0 || (i === st.focus && kind === st.focusKind)) return;
+    clearDwell(); unmark(); st.focus = i; st.focusKind = kind; const c = cards[i]; c.el.classList.add('is-focus', 'is-hover');
+    st.hist = []; st.pan = 0; st.panV = 0; st.scrollV = 0; st.av = 0;
+    if (reveal) { st.focusTx = revealX(i); st.scrollTarget = revealScroll(i); }
+    else { st.focusTx = focusX(i); st.scrollTarget = clamp(field.getBoundingClientRect().top + window.scrollY + c.T + c.ch / 2 - innerHeight / 2, 0, maxScroll()); }
+    st.ext.l = Math.max(st.ext.l, st.focusTx); st.ext.r = Math.max(st.ext.r, -st.focusTx);
+    st.focusFrom = !fromKeyboard && st.cx != null ? { x: st.cx, y: st.cy } : null;
+    st.mode = 'focus'; kick(); setStatus();
+  }
+  function releaseFocus() {
+    if (st.focus < 0) return; unmark(); st.focus = -1; st.focusFrom = null; st.scrollTarget = null; clearDwell();
+    st.pan = st.x - st.m; st.mode = st.inside ? 'follow' : 'rest'; kick(); setStatus();
+  }
+  // An offset left behind by a drag or a held card melts away as the pointer heads for the far side, so every card stays reachable.
+  function absorb(m0, m1) {
+    if (!st.pan || m1 === m0 || st.mode !== 'follow') return;
+    if (m1 < m0 && st.pan > 0) { const r = m0 + lim.r; st.pan = r > 1 ? st.pan * Math.max(0, (m1 + lim.r) / r) : 0; }
+    else if (m1 > m0 && st.pan < 0) { const r = lim.l - m0; st.pan = r > 1 ? st.pan * Math.max(0, (lim.l - m1) / r) : 0; }
+  }
+  // Resting = the pointer stays put on one card while the canvas has all but arrived and nothing else is driving the page.
+  function clearDwell() { clearTimeout(st.dwellTimer); st.dwellTimer = 0; st.dwellIdx = -1; st.dwellAt = null; }
+  function dwellBlocked() { return assistBusy() || Math.abs(st.vx) > SETTLED || performance.now() - st.lastWheel < 400; }
+  function armDwell() {
+    const i = dwellBlocked() ? -1 : hitTest();
+    const moved = !st.dwellAt || Math.hypot(st.cx - st.dwellAt.x, st.cy - st.dwellAt.y) > REST;
+    if (i === st.dwellIdx && !moved) return;
+    clearDwell(); st.dwellIdx = i; st.dwellAt = { x: st.cx, y: st.cy };
+    if (i >= 0 && +P.dwell > 0 && st.focus !== i) st.dwellTimer = setTimeout(() => { st.dwellTimer = 0; if (!dwellBlocked() && hitTest() === i) focusCard(i, false, !!P.reveal); }, +P.dwell);
+  }
+
+  /* ---------- frame ---------- */
+  function frame(now) {
+    const dt = Math.min(0.034, Math.max(0.001, (now - st.last) / 1000)); st.last = now;
+    if (P.fit) { plane.style.transform = 'translate3d(' + fit.tx.toFixed(2) + 'px,0,0) scale(' + (fit.k * s).toFixed(4) + ')';
+      readout.textContent = 'whole grid at ' + Math.round(fit.k * 100) + '%'; updateMap(st.x); st.raf = 0; setStatus(); return; }
+
+    const cutoff = now - (reduce ? 0 : +P.delay);
+    while (st.hist.length > 1 && st.hist[1].t <= cutoff) st.hist.shift();
+    if (st.hist.length && st.hist[0].t <= cutoff) { const e = st.hist.shift();
+      if (e.home) { st.m = 0; st.pan = 0; st.panV = 0; if (st.mode === 'coast') st.mode = 'rest'; } else { absorb(st.m, e.x); st.m = e.x; } }
+
+    // sideways
+    let tx, direct = false;
+    if (st.mode === 'drag') { tx = st.drag.frozen + st.pan; st.x = rubber(tx, st.ext.l + BAND, st.ext.r + BAND); st.vx = 0; direct = true; }
+    else if (st.mode === 'focus') tx = st.focusTx;
+    else if (st.mode === 'open') { tx = st.x; st.vx = 0; direct = true; }
+    else {
+      if (st.mode === 'coast') { st.pan += st.panV * dt; const k = Math.pow(0.9, dt * 60); st.panV *= k; st.scrollV *= k;
+        if (Math.abs(st.panV) < 12 && Math.abs(st.scrollV) < 12) { st.scrollV = 0; st.mode = st.inside ? 'follow' : 'rest'; } }
+      tx = st.m + st.pan; const cx = clamp(tx, -st.ext.r, st.ext.l); if (cx !== tx) { st.pan += cx - tx; st.panV = 0; tx = cx; }
+      st.ext.l = Math.max(lim.l, Math.min(st.ext.l, cx)); st.ext.r = Math.max(lim.r, Math.min(st.ext.r, -cx));   // the widened limit ratchets back as the canvas comes home
+      if (reduce && st.mode !== 'coast') { st.x = tx; st.vx = 0; direct = true; }
+    }
+    if (!direct) {
+      const ms = st.mode === 'focus' ? +P.focusGlide : +P.glide, T = Math.max(0.1, ms / 1000), zeta = st.mode === 'focus' ? 1 : Math.max(0.2, 1 - P.overshoot), w = 6 / T;
+      const steps = Math.max(1, Math.ceil(w * dt / 0.4)), h = dt / steps;
+      for (let i = 0; i < steps; i++) { st.vx += (w * w * (tx - st.x) - 2 * zeta * w * st.vx) * h; if (Math.abs(st.vx) > P.speed) st.vx = Math.sign(st.vx) * P.speed; st.x += st.vx * h; }
+    }
+
+    // up and down is the page
+    let scrolling = false;
+    if (st.scrollTarget != null) {
+      const cur = pageY(), next = reduce ? st.scrollTarget : cur + (st.scrollTarget - cur) * (1 - Math.exp(-dt / Math.max(0.03, P.focusGlide / 1000 / 4)));
+      if (Math.abs(st.scrollTarget - next) < 0.6) { setScroll(st.scrollTarget); st.scrollTarget = null; } else { setScroll(next); scrolling = true; }
+    } else if (st.mode === 'coast' && Math.abs(st.scrollV) >= 12) { scrollByAcc(st.scrollV * dt); scrolling = true; }
+    else {
+      const quiet = !reduce && now - st.lastWheel > 500 && !st.wheelAt, cd = quiet ? carryDir() : 0;
+      let target = 0;
+      if (cd) {                                             // first 180ms: same speed as inside the grid, so passing through on the way to the nav barely nudges the page
+        if (!st.carrySince) st.carrySince = now;
+        const zoneV = Math.abs(assistNow()), cruise = now - st.carrySince > 180 ? Math.max(zoneV, P.assist * P.carry / 100) : zoneV;
+        const dist = cd < 0 ? window.scrollY : maxScroll() - window.scrollY;
+        target = cd * Math.min(cruise, Math.max(60, dist * 5));   // ease into the landing
+      } else { if (Math.abs(st.av) <= 20) st.carrySince = 0; if (quiet && st.inside && !st.overPanel && st.mode === 'follow' && st.focus < 0) { target = assistNow(); if (target) st.carrySince = 0; } }
+      st.av += (target - st.av) * (1 - Math.exp(-dt / 0.16));
+      if (Math.abs(st.av) > 2) { scrollByAcc(st.av * dt); scrolling = true; } else if (target === 0) { st.av = 0; st.acc = 0; } else scrolling = true;
+    }
+
+    paint(tx); armDwellIfIdle();   // the canvas or the page may have moved under a still pointer
+    const still = Math.abs(tx - st.x) < 0.25 && Math.abs(st.vx) < 2;
+    if (st.mode !== 'drag' && st.mode !== 'coast' && st.hist.length === 0 && still && !scrolling) { st.x = tx; st.vx = 0; paint(tx); st.raf = 0; setStatus(); return; }
+    setStatus(); st.raf = nextFrame(frame);
+  }
+  function paint(tx) {
+    plane.style.transform = 'translate3d(' + st.x.toFixed(2) + 'px,0,0) scale(' + s.toFixed(4) + ')';
+    readout.textContent = 'sideways ' + Math.round(st.x) + '  |  limits L' + Math.round(lim.l) + ' R' + Math.round(lim.r) + '  |  scroll ' + Math.round(window.scrollY);
+    updateMap(tx);
+    if (P.showTarget) { const p = localPtr(); if (p) { dot.style.left = p.x + 'px'; dot.style.top = p.y + 'px'; } }
+  }
+  function setStatus() {
+    if (index) Array.prototype.forEach.call(index.querySelectorAll('button'), (b) => b.classList.toggle('is-active', +b.dataset.i === st.focus));   // the index shows which card is held
+    let state = 'rest', text = 'Motion';
+    if (P.fit) { state = 'fit'; text = 'Whole grid'; }
+    else if (st.open >= 0) { state = 'focus'; text = 'Open: ' + cards[st.open].name; }
+    else if (st.mode === 'drag') { state = 'drag'; text = 'Dragging'; }
+    else if (st.mode === 'coast') { state = 'coast'; text = 'Coasting'; }
+    else if (st.focus >= 0) { state = 'focus'; text = (st.focusKind === 'reveal' ? 'Showing ' : 'Centred on ') + cards[st.focus].name; }
+    else if (st.overPanel) { state = 'hold'; text = 'Holding while you tune'; }
+    else if (Math.abs(st.av) > 20) { state = 'follow'; text = st.carrySince ? (st.av > 0 ? 'Carrying on to the footer' : 'Carrying back to the header') : st.av > 0 ? 'Helping you scroll down' : 'Helping you scroll up'; }
+    else if (st.inside) { state = 'follow'; text = 'Exploring'; }
+    else if (st.raf) { state = 'follow'; text = P.returnHome ? 'Returning home' : 'Settling'; }
+    if (status.dataset.state !== state) status.dataset.state = state;
+    if (statusText.textContent !== text) statusText.textContent = text;
+  }
+
+  /* ---------- cover clips: play while the card is hovered or held, pause and rewind once faded out ---------- */
+  cards.forEach((c) => { const v = c.el.querySelector('.cover-video'); if (!v) return; let stopTimer = 0;
+    const want = () => c.el.matches(':hover') || c.el.classList.contains('is-hover') || c.el.classList.contains('is-open-card');
+    const update = () => { if (reduce) return; clearTimeout(stopTimer);
+      if (want()) { if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } }
+      else stopTimer = setTimeout(() => { if (!want()) { v.pause(); v.currentTime = 0; } }, 400); };
+    c.el.addEventListener('pointerenter', update); c.el.addEventListener('pointerleave', update);
+    new MutationObserver(update).observe(c.el, { attributes: true, attributeFilter: ['class'] }); });
+  cards.forEach((c) => { const parts = c.el.querySelectorAll('.tt-anim'); if (!parts.length) return; let t = 0;
+    const want = () => c.el.matches(':hover') || c.el.classList.contains('is-hover') || c.el.classList.contains('is-open-card');
+    const rewind = () => { clearTimeout(t); t = setTimeout(() => { if (want()) return; parts.forEach((p) => { p.style.animation = 'none'; }); void c.el.offsetWidth; parts.forEach((p) => { p.style.animation = ''; }); }, 500); };
+    c.el.addEventListener('pointerleave', rewind); new MutationObserver(() => { if (!want()) rewind(); }).observe(c.el, { attributes: true, attributeFilter: ['class'] }); });
+
+  /* ---------- pointer ---------- */
+  field.addEventListener('pointerenter', (e) => { if (e.pointerType === 'touch' || P.fit) return; st.inside = true; st.overPanel = false; if (st.mode === 'rest') st.mode = 'follow'; setStatus(); });
+  field.addEventListener('pointermove', (e) => {
+    st.cx = e.clientX; st.cy = e.clientY;
+    if (st.mode === 'drag') { const d = st.drag, now = performance.now();
+      st.pan = d.panX + (e.clientX - d.px);
+      const dy = e.clientY - d.lastY; d.lastY = e.clientY; if (dy && e.pointerType !== 'touch') setScroll(pageY() - dy);   // vertical drag moves the page
+      if (Math.hypot(e.clientX - d.px, e.clientY - d.py) > 6) d.moved = true;
+      d.samples.push({ t: now, x: e.clientX, y: e.clientY }); while (d.samples.length > 2 && now - d.samples[0].t > 90) d.samples.shift(); kick(); return; }
+    if (e.pointerType === 'touch' || reduce || P.fit || st.open >= 0) return;
+    st.inside = true; st.engaged = true;
+    if (st.focus >= 0) {
+      if (st.focusFrom && Math.hypot(e.clientX - st.focusFrom.x, e.clientY - st.focusFrom.y) > 80) { st.m = mappedX(e.clientX); releaseFocus(); }
+      else if (!st.focusFrom) st.focusFrom = { x: e.clientX, y: e.clientY };
+      return;
+    }
+    if (st.mode === 'rest') st.mode = 'follow';
+    record({ t: performance.now(), x: mappedX(e.clientX) }); armDwell();
+  }, { passive: true });
+  field.addEventListener('pointerleave', (e) => {
+    if (st.mode === 'drag') return;
+    st.inside = false; clearDwell();
+    if (e.relatedTarget && panel.contains(e.relatedTarget)) { st.overPanel = true; st.hist = []; if (st.mode === 'follow') st.mode = 'rest'; setStatus(); return; }
+    releaseFocus(); if (P.returnHome) record({ t: performance.now(), home: true });
+    if (st.mode === 'follow') st.mode = 'rest'; kick(); setStatus();
+  });
+  panel.addEventListener('pointerleave', () => { if (!st.overPanel) return; st.overPanel = false; if (!st.inside && P.returnHome) record({ t: performance.now(), home: true }); setStatus(); });
+  field.addEventListener('pointerdown', (e) => { if (e.target.closest('.work-index')) return;
+    if (!P.drag || P.fit || e.button !== 0 || st.open >= 0) return;
+    if (e.pointerType !== 'touch') e.preventDefault();   // keep the browser's own mousedown behaviour out of it: focusing the card (which can scroll the page), dragging the image, selecting text
+    clearDwell(); unmark(); st.focus = -1; st.focusFrom = null; st.scrollTarget = null; st.av = 0;
+    field.setPointerCapture(e.pointerId); field.classList.add('dragging');
+    const frozen = st.m; st.pan = st.x - frozen; st.panV = 0; st.scrollV = 0; st.hist = [];
+    st.drag = { frozen, px: e.clientX, py: e.clientY, lastY: e.clientY, panX: st.pan, moved: false, samples: [{ t: performance.now(), x: e.clientX, y: e.clientY }] };
+    st.mode = 'drag'; kick(); setStatus();
+  });
+  function endDrag(e) {
+    if (st.mode !== 'drag') return;
+    const d = st.drag; field.classList.remove('dragging'); st.suppressClick = d.moved;
+    const a = d.samples[0], z = d.samples[d.samples.length - 1], span = Math.max(16, z.t - a.t), touch = e && e.pointerType === 'touch';
+    const b = field.getBoundingClientRect(), inside = !!e && e.clientX >= b.left && e.clientX <= b.right && e.clientY >= b.top && e.clientY <= b.bottom;
+    st.inside = inside && !touch; st.m = st.inside && !reduce ? mappedX(e.clientX) : 0; st.pan = st.x - st.m;
+    st.panV = reduce ? 0 : (z.x - a.x) / span * 1000; st.scrollV = reduce || touch ? 0 : -(z.y - a.y) / span * 1000;
+    st.drag = null; st.hist = []; st.mode = reduce ? (st.inside ? 'follow' : 'rest') : 'coast';
+    if (!st.inside && P.returnHome) record({ t: performance.now() + 250, home: true });
+    kick(); setStatus();
+  }
+  field.addEventListener('pointerup', endDrag); field.addEventListener('pointercancel', endDrag);
+  field.addEventListener('dragstart', (e) => e.preventDefault());
+  field.addEventListener('click', (e) => {
+    if (e.target.closest('.work-index')) return;                                                      // the index handles its own clicks
+    if (st.suppressClick) { e.stopPropagation(); e.preventDefault(); st.suppressClick = false; return; }
+    if (P.fit) return; if (st.open >= 0) { closeCard(); return; }
+    st.cx = e.clientX; st.cy = e.clientY; const i = hitTest(); if (i >= 0) { if (P.open) openCard(i); else focusCard(i); } else releaseFocus();
+  }, true);
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (st.open >= 0) closeCard(); else releaseFocus(); }
+    else if ((e.key === 'Enter' || e.key === ' ') && P.open && st.open < 0) { const i = cards.findIndex((c) => c.el === document.activeElement); if (i >= 0) { e.preventDefault(); openCard(i); } } });
+
+  /* ---------- opening a project: the card grows into place, the others blur and fade away, its details fade in beside it ---------- */
+  const veil = $('openVeil'), info = $('openInfo'); st.open = -1;
+  function openCard(i) {
+    if (st.open >= 0 || P.fit) return; releaseFocus(); clearDwell();
+    // a card with a case study goes straight to it (the page fades for a beat); the details panel below is only for the ones without a page yet
+    const page = cards[i].el.getAttribute('data-href');
+    if (page && !SIM) { document.documentElement.classList.add('leaving'); setTimeout(() => { location.href = page; }, 300); return; }
+    const c = cards[i], el = c.el, fb = field.getBoundingClientRect(), vw = innerWidth, vh = innerHeight, narrow = vw < 900;
+    const cur = { x: fb.left + st.x + c.L, y: fb.top + c.T, w: c.cw, h: c.ch };                     // where the card sits on screen, without its hover lift
+    const boxW = narrow ? vw * 0.86 : vw * 0.5, boxH = narrow ? vh * 0.44 : vh * 0.72, k = Math.min(boxW / cur.w, boxH / cur.h, 2.2);
+    const tw = cur.w * k, th = cur.h * k, tx = narrow ? (vw - tw) / 2 : Math.max(40, vw * 0.31 - tw / 2), ty = narrow ? 110 : Math.max(110, (vh - th) / 2 + 12);
+    const ox = 0.5 * c.w, oy = 0.6 * CARD_H;                                                        // the card's own transform origin (50% 60%), in design px
+    el.style.transform = 'translate(' + ((tx - cur.x) / s - ox * (1 - k)).toFixed(2) + 'px,' + ((ty - cur.y) / s - oy * (1 - k)).toFixed(2) + 'px) scale(' + k.toFixed(4) + ')';
+    el.classList.add('is-open-card'); field.classList.add('is-open'); veil.classList.add('on');
+    const title = el.querySelector('.card-title'), sub = el.querySelector('.card-sub'), href = el.getAttribute('data-href');
+    $('oiCount').textContent = String(i + 1).padStart(2, '0') + ' / ' + String(cards.length).padStart(2, '0');
+    $('oiTitle').textContent = title ? title.textContent.trim() : c.name; $('oiSub').textContent = sub ? sub.textContent.trim() : '';
+    const link = $('oiLink'); link.hidden = !href; $('oiSoon').hidden = !!href; if (href) link.setAttribute('href', href);
+    info.classList.add('on'); info.setAttribute('aria-hidden', 'false');
+    st.open = i; st.openFocus = document.activeElement; st.mode = 'open'; st.hist = []; st.av = 0; st.scrollTarget = null; kick(); setStatus();
+    setTimeout(() => { if (st.open === i) (href ? link : $('oiClose')).focus({ preventScroll: true }); }, 380);
+  }
+  function closeCard(instant) {
+    if (st.open < 0) return; const i = st.open, el = cards[i].el; st.open = -1;
+    el.classList.add('is-closing-card'); el.classList.remove('is-open-card'); el.style.transform = '';
+    field.classList.remove('is-open'); veil.classList.remove('on'); info.classList.remove('on'); info.setAttribute('aria-hidden', 'true');
+    setTimeout(() => el.classList.remove('is-closing-card'), instant ? 0 : 600);
+    if (st.openFocus && st.openFocus.focus && st.openFocus !== document.body) st.openFocus.focus({ preventScroll: true });
+    st.pan = st.x - st.m; st.mode = st.inside ? 'follow' : 'rest'; kick(); setStatus();
+  }
+  veil.addEventListener('click', () => closeCard()); $('oiClose').addEventListener('click', () => closeCard());
+  addEventListener('pageshow', () => document.documentElement.classList.remove('leaving'));   // coming back from a case study restores the page from the cache as it was left
+
+  /* ---------- entrance: the grid rises from below while zooming out to its resting size ---------- */
+  let introTimer = 0;
+  const hero = document.querySelector('.work-hero'), h1El = hero && hero.querySelector('.hero-title'), subEl = hero && hero.querySelector('.work-sub');
+  // Header type: only with the panel. The variables override the fallbacks in css/work.css; without ?tune nothing is set and the CSS is the site.
+  function applyType() {
+    if (!hero || !TUNE) return;
+    const s = hero.style, px = (n) => Math.round(n) + 'px';   // sizes at the 1730 frame; css/work.css steps them by --step at its breakpoints
+    s.setProperty('--hero-top', px(P.heroTop));
+    s.setProperty('--h1-base', px(P.h1Size));
+    s.setProperty('--h1-lh', (P.h1Lh / P.h1Size).toFixed(4)); s.setProperty('--h1-track', (P.h1Track / 100).toFixed(4) + 'em'); s.setProperty('--h1-weight', P.h1Weight);
+    s.setProperty('--hero', hex(P.h1Grey)); s.setProperty('--accent', hex(P.acGrey)); s.setProperty('--ac-size', (P.acSize / 100).toFixed(2) + 'em'); s.setProperty('--ac-weight', P.acWeight);
+    s.setProperty('--sub-base', px(P.subSize)); s.setProperty('--sub-lh', (P.subLh / P.subSize).toFixed(4)); s.setProperty('--sub-gap-base', px(P.subGap));
+    s.setProperty('--sub', hex(P.subGrey)); s.setProperty('--sub-alpha', (P.subAlpha / 100).toFixed(2));
+  }
+  // the words of the heading, and the phrases of the subtitle, each in a span.w numbered in reading order (--i), for the word ripple. A fragment
+  // that follows a word without a space (the comma after "Google") shares that word's number so they move as one. The "Google" span is itself a word.
+  function rippleWords() {
+    if (!hero || hero.dataset.words) return; let idx = 0, open = false;
+    const mark = (el, same) => { el.classList.add('w'); el.dataset.wi = same ? Math.max(0, idx - 1) : idx++; return el; };
+    const walk = (node) => { Array.from(node.childNodes).forEach((n) => {
+      if (n.nodeType === 3) { const frag = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach((part) => { if (!part) return; if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(' ')); open = false; return; }
+          const w = mark(document.createElement('span'), open); w.textContent = part; frag.appendChild(w); open = true; });
+        if (/\s$/.test(n.textContent)) open = false; n.parentNode.replaceChild(frag, n); }
+      else if (n.nodeType === 1) { if (n.classList.contains('ac-google')) { mark(n, open); open = true; } else walk(n); } }); };
+    if (h1El) walk(h1El);
+    if (subEl) { idx = 0; Array.from(subEl.childNodes).forEach((n) => { if (n.nodeType === 3) { if (!n.textContent.trim()) { n.remove(); return; } const w = mark(document.createElement('span')); w.textContent = n.textContent.trim(); n.parentNode.replaceChild(w, n); }
+      else if (n.nodeType === 1 && !n.classList.contains('w')) { const w = mark(document.createElement('span')); n.parentNode.insertBefore(w, n); w.appendChild(n); } }); }
+  }
+  // --i for every word: its place in the line by words, or the number of its line by lines (the subtitle being the line after the heading's last)
+  function assignRipple() {
+    if (!hero) return; const byLine = P.h1Unit === 'line', words = h1El ? Array.from(h1El.querySelectorAll('.w')) : [];
+    let lines = 0;
+    if (byLine) { const tol = h1El ? parseFloat(getComputedStyle(h1El).lineHeight) * 0.4 : 20; let top = null, li = -1;
+      words.forEach((w) => { const t = w.getBoundingClientRect().top; if (top === null || Math.abs(t - top) > tol) { li++; top = t; } w.style.setProperty('--i', li); }); lines = li + 1; }
+    else words.forEach((w) => w.style.setProperty('--i', w.dataset.wi));
+    if (subEl) { Array.from(subEl.querySelectorAll('.w')).forEach((w) => w.style.setProperty('--i', byLine ? lines : w.dataset.wi));
+      if (byLine) { subEl.style.setProperty('--base', Math.round(P.h1Delay) + 'ms'); subEl.style.setProperty('--dur', Math.round(P.h1Ms) + 'ms'); } else { subEl.style.removeProperty('--base'); subEl.style.removeProperty('--dur'); } }
+    hero.dataset.units = String(byLine ? lines + 1 : words.length); hero.dataset.lines = String(lines);
+  }
+  function playHero() {   // heading, then subtitle, each blurring in as a whole on its own clock, or word by word when a stagger is set
+    if (!hero) return; rippleWords(); hero.classList.remove('go', 'still'); void hero.offsetWidth;
+    hero.classList.toggle('ripple', P.h1Stagger > 0); hero.style.setProperty('--stagger', Math.round(P.h1Stagger) + 'ms'); assignRipple();
+    if (document.fonts && document.fonts.status !== 'loaded') document.fonts.ready.then(() => { if (hero.classList.contains('go')) assignRipple(); });   // a first visit wraps differently until the fonts arrive
+    if (reduce) { hero.classList.add('still'); return; }
+    hero.style.setProperty('--h1-delay', Math.round(P.h1Delay) + 'ms'); hero.style.setProperty('--h1-ms', Math.round(P.h1Ms) + 'ms');
+    hero.style.setProperty('--sub-delay', Math.round(P.subDelay) + 'ms'); hero.style.setProperty('--sub-ms', Math.round(P.subMs) + 'ms');
+    hero.style.setProperty('--h1-blur', Math.round(P.h1Blur) + 'px'); hero.style.setProperty('--sub-blur', Math.round(P.subBlur) + 'px');
+    hero.style.setProperty('--fish-delay', Math.round(P.fishDelay) + 'ms'); hero.style.setProperty('--fish-ms', Math.round(P.fishMs) + 'ms');
+    hero.classList.add('go');
+  }
+  function playIntro() {
+    playHero();
+    if (reduce || P.fit) return; clearTimeout(introTimer); field.classList.remove('arriving'); cards.forEach((c) => c.el.classList.remove('near')); void field.offsetWidth;
+    // a zoomed-in camera pulling back, card by card: each card starts scaled up and pushed outward from the top centre of the screen, then returns
+    const k0 = Math.max(1, +P.introScale), fb = field.getBoundingClientRect(), Fx = innerWidth / 2, Fy = 0;
+    const pts = cards.map((c, i) => { const cx = fb.left + st.x + c.L + c.cw / 2, cy = fb.top + c.T + c.ch / 2; return { i, cx, cy, d: Math.hypot(cx - Fx, cy - Fy) }; }).sort((a, b) => a.d - b.d);
+    let last = 0;
+    pts.forEach((pt, n) => { const el = cards[pt.i].el, delay = Math.round(P.introDelay + n * P.stagger); last = delay;                       // nearest the top centre first
+      el.style.setProperty('--in-x', ((k0 - 1) * (pt.cx - Fx) / s).toFixed(1) + 'px'); el.style.setProperty('--in-y', ((k0 - 1) * (pt.cy - Fy) / s).toFixed(1) + 'px');
+      el.style.setProperty('--in-k', k0.toFixed(3)); el.style.setProperty('--in-delay', delay + 'ms'); el.style.setProperty('--in-ms', Math.round(P.introMs) + 'ms'); el.style.setProperty('--in-focus', Math.round(P.focusPx) + 'px'); el.classList.add('near'); });
+    field.classList.add('arriving');
+    introTimer = setTimeout(() => { cards.forEach((c) => c.el.classList.remove('near')); field.classList.remove('arriving'); }, last + +P.introMs + 120);
+  }
+  // the user's own scrolling always wins over the helper
+  let wheelTimer = 0;
+  function userScrolled() { own.user = st.lastWheel = performance.now(); own.y = null; st.scrollTarget = null; st.scrollV = 0; st.av = 0; st.acc = 0; st.engaged = false; if (st.open >= 0) closeCard();
+    st.wheelAt = st.cx != null ? { x: st.cx, y: st.cy } : null; if (st.focus >= 0) releaseFocus();
+    clearDwell(); clearTimeout(wheelTimer); wheelTimer = setTimeout(armDwellIfIdle, 450); }
+  addEventListener('wheel', userScrolled, { passive: true });
+  addEventListener('touchmove', userScrolled, { passive: true });
+  addEventListener('keydown', (e) => { if ([' ', 'PageDown', 'PageUp', 'ArrowDown', 'ArrowUp', 'Home', 'End'].indexOf(e.key) >= 0 && !panel.contains(e.target)) userScrolled(); });
+  // the pointer is followed across the whole page, so the carry knows when it is above or below the grid, over the nav or the panel, or gone from the window
+  addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch') return;
+    st.onPage = true; st.overChrome = !!(e.target && e.target.closest && e.target.closest('.gnav-pill, .panel'));
+    if (st.mode !== 'drag') { st.cx = e.clientX; st.cy = e.clientY; }
+    if (st.wheelAt && Math.hypot(e.clientX - st.wheelAt.x, e.clientY - st.wheelAt.y) > 24) st.wheelAt = null;
+    if (carryDir()) kick();
+  }, { passive: true });
+  document.documentElement.addEventListener('mouseleave', () => { st.onPage = false; });
+  document.documentElement.addEventListener('mouseenter', () => { st.onPage = true; });
+  addEventListener('pointerdown', () => { own.user = performance.now(); }, true);      // a press anywhere (scrollbar aside) counts as the user's doing
+  let lastY = window.scrollY;
+  addEventListener('scroll', () => {
+    const y = window.scrollY, now = performance.now(), jump = y - lastY; lastY = y;
+    const mine = own.y != null && now - own.at < 1500, byUser = now - own.user < 400;
+    if (mine && !byUser && Math.abs(y - own.y) > 120) {          // the page is suddenly far from where this script put it and the user did not do it
+      note('snap-back undone', own.y, y); window.scrollTo(0, own.y); lastY = own.y; return; }
+    if (Math.abs(jump) > 60) note(byUser ? 'user jump' : mine && Math.abs(y - own.y) < 4 ? 'script jump' : 'unexplained jump', y - jump, y);
+    updateMap(st.x); armDwellIfIdle();
+  }, { passive: true });
+  // ?debug shows the last few scroll jumps on the page (what moved it, from where to where, what had focus), and logs them to the console
+  const DEBUG = q.has('debug'); let noteBox = null;
+  function note(kind, from, to) {
+    if (!DEBUG) return; const a = document.activeElement, now = performance.now();
+    const line = (now / 1000).toFixed(2) + 's  ' + kind + '  ' + Math.round(from) + ' -> ' + Math.round(to) + '  | since script ' + Math.round(now - own.at) + 'ms, since user ' + Math.round(now - own.user) + 'ms | mode ' + st.mode +
+      (st.focus >= 0 ? ' (' + cards[st.focus].name + ')' : '') + ' | focus on ' + (a && a !== document.body ? a.tagName.toLowerCase() + '.' + String(a.className).split(' ').slice(-1)[0] : 'nothing');
+    console.log('[canvas]', line);
+    if (!noteBox) { noteBox = document.createElement('pre'); noteBox.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:3000;margin:0;padding:10px 12px;max-width:70vw;white-space:pre-wrap;font:11px/16px ui-monospace,Menlo,monospace;color:#fff;background:rgba(0,0,0,.78);border-radius:10px;pointer-events:none'; document.body.appendChild(noteBox); }
+    noteBox.textContent = (noteBox.textContent + '\n' + line).trim().split('\n').slice(-6).join('\n');
+  }
+  function armDwellIfIdle() { if (st.inside && !st.overPanel && st.focus < 0 && st.mode === 'follow' && !reduce && !P.fit) armDwell(); }
+
+  /* ---------- map: the whole grid, with the screen as a window on it ---------- */
+  let mapScale = 1, mapOX = 0, mapOY = 0, mView, mTarget;
+  function buildMap() {
+    map.innerHTML = ''; if (panel.classList.contains('collapsed')) { mView = null; return; }
+    const bw = B.x1 - B.x0, bh = (CANVAS_H + PAD * 2) * s, mw = map.clientWidth || 262, mh = map.clientHeight || 104, pad = 6;
+    mapScale = Math.min((mw - pad * 2) / bw, (mh - pad * 2) / bh);
+    mapOX = (mw - bw * mapScale) / 2 - B.x0 * mapScale; mapOY = (mh - bh * mapScale) / 2;
+    const bound = document.createElement('i'); bound.className = 'm-bound';
+    Object.assign(bound.style, { left: mapOX + B.x0 * mapScale + 'px', top: mapOY + 'px', width: bw * mapScale + 'px', height: bh * mapScale + 'px' }); map.appendChild(bound);
+    cards.forEach((c) => { const i = document.createElement('i'); i.className = 'm-card';
+      Object.assign(i.style, { left: mapOX + c.L * mapScale + 'px', top: mapOY + c.T * mapScale + 'px', width: c.cw * mapScale + 'px', height: c.ch * mapScale + 'px' }); map.appendChild(i); });
+    mTarget = document.createElement('i'); mTarget.className = 'm-target'; map.appendChild(mTarget);
+    mView = document.createElement('i'); mView.className = 'm-view'; map.appendChild(mView);
+    updateMap(st.x);
+  }
+  function updateMap(tx) {
+    if (!mView) return;
+    const top = -field.getBoundingClientRect().top / (P.fit ? fit.k : 1), vh = innerHeight / (P.fit ? fit.k : 1);
+    [mTarget, mView].forEach((el) => Object.assign(el.style, { width: W * mapScale + 'px', height: vh * mapScale + 'px' }));
+    mView.style.transform = 'translate(' + (mapOX - st.x * mapScale).toFixed(1) + 'px,' + (mapOY + top * mapScale).toFixed(1) + 'px)';
+    mTarget.style.transform = 'translate(' + (mapOX - tx * mapScale).toFixed(1) + 'px,' + (mapOY + top * mapScale).toFixed(1) + 'px)';
+    mView.style.opacity = P.fit ? 0.25 : 1; mTarget.style.opacity = P.fit ? 0 : 1;
+  }
+
+  /* ---------- panel ---------- */
+  const controls = $('controls'), presets = $('presets'), inputs = {};
+  let lastGroup = null, groupEl = null;
+  SLIDERS.forEach((c) => {
+    if (c.group !== lastGroup) { groupEl = document.createElement('div'); groupEl.className = 'group'; groupEl.innerHTML = '<div class="group-title">' + c.group + '</div>'; controls.appendChild(groupEl); lastGroup = c.group; }
+    const id = 'ctl-' + c.key, row = document.createElement('div'); row.className = 'ctl';
+    row.title = c.tip;
+    row.innerHTML = '<div class="ctl-top"><label for="' + id + '">' + c.label + '</label><output for="' + id + '"></output></div><input type="range" id="' + id + '" min="' + c.min + '" max="' + c.max + '" step="' + c.step + '" aria-describedby="' + id + '-tip"><p class="tip" id="' + id + '-tip">' + c.tip + '</p>';
+    groupEl.appendChild(row);
+    const input = row.querySelector('input'), out = row.querySelector('output');
+    input.addEventListener('input', () => { P[c.key] = +input.value; sync(c.key); }); inputs[c.key] = { input, out, c };
+  });
+  // the orchestration timeline: one bar per element, from when it starts to when it is done, so overlaps are easy to see
+  const orchGroup = Array.prototype.find.call(controls.children, (g) => g.querySelector('.group-title') && g.querySelector('.group-title').textContent === 'Orchestration');
+  const orch = document.createElement('div'); orch.className = 'orch'; if (orchGroup) orchGroup.insertBefore(orch, orchGroup.children[1] || null);
+  if (orchGroup) { const tt = orchGroup.querySelector('.group-title'); const rb = document.createElement('button'); rb.type = 'button'; rb.className = 'chip chip-mini'; rb.textContent = 'Replay'; rb.addEventListener('click', playIntro); tt.appendChild(rb); tt.classList.add('with-btn'); }
+  function drawOrch() {
+    const rows = [['Grid', P.introDelay, P.introDelay + P.stagger * (cards.length - 1) + P.introMs], ['Header', P.h1Delay, P.h1Delay + P.h1Ms + P.h1Stagger * Math.max(0, (P.h1Unit === 'line' ? +(hero && hero.dataset.lines) || 1 : +(hero && hero.dataset.units) || 1) - 1)],
+      P.h1Unit === 'line' && P.h1Stagger > 0 ? ['Subtitle', P.h1Delay + P.h1Stagger * (+(hero && hero.dataset.lines) || 1), P.h1Delay + P.h1Stagger * (+(hero && hero.dataset.lines) || 1) + P.h1Ms] : ['Subtitle', P.subDelay, P.subDelay + P.subMs + (P.h1Stagger > 0 ? P.h1Stagger * 2 : 0)], ['Fish tile', P.fishDelay, P.fishDelay + P.fishMs]];
+    const total = Math.max(1000, Math.ceil(Math.max.apply(null, rows.map((r) => r[2])) / 500) * 500);
+    let html = '';
+    rows.forEach((r) => { html += '<div class="o-row"><span class="o-label">' + r[0] + '</span><span class="o-track"><i style="left:' + (r[1] / total * 100).toFixed(1) + '%;width:' + ((r[2] - r[1]) / total * 100).toFixed(1) + '%"></i></span><span class="o-end">' + Math.round(r[2]) + '</span></div>'; });
+    html += '<div class="o-ticks">'; for (let ms = 0; ms <= total; ms += 500) html += '<span style="left:' + (ms / total * 100).toFixed(1) + '%">' + (ms / 1000).toFixed(1) + 's</span>'; html += '</div>';
+    orch.innerHTML = html;
+  }
+  Object.keys(CHIPS).forEach((k) => { const w = CHIPS[k], row = document.createElement('div'); row.className = 'ctl';
+    row.innerHTML = '<div class="ctl-top"><label>' + w.label + '</label></div><div class="presets" role="group" aria-label="' + w.label + '"></div>';
+    const chips = row.querySelector('.presets');
+    w.opts.forEach(([val, name]) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = name; b.dataset.v = val; b.addEventListener('click', () => { P[k] = val; sync(k); }); chips.appendChild(b); });
+    const next = inputs[w.before] && inputs[w.before].input.closest('.ctl'); if (next) next.parentNode.insertBefore(row, next);
+    inputs[k] = { chips, chipRow: true }; });
+  const tg = document.createElement('div'); tg.className = 'group'; tg.innerHTML = '<div class="group-title">Behaviour</div>'; controls.appendChild(tg);
+  TOGGLES.forEach((t) => { const lab = document.createElement('label'); lab.className = 'toggle'; lab.title = t.tip; lab.innerHTML = '<span class="toggle-text"><span>' + t.label + '</span><span class="tip">' + t.tip + '</span></span><input type="checkbox">'; tg.appendChild(lab);
+    const input = lab.querySelector('input'); input.addEventListener('change', () => { P[t.key] = input.checked; sync(t.key); }); inputs[t.key] = { input, toggle: true }; });
+  Object.keys(PRESETS).forEach((name) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = name; b.dataset.preset = name;
+    b.addEventListener('click', () => { Object.assign(P, PRESETS[name]); sync('*'); }); presets.appendChild(b); });
+
+  function sync(changed) {
+    applyType();   // before the readouts, which show the rendered sizes
+    Object.keys(inputs).forEach((k) => { const r = inputs[k];
+      if (r.toggle) r.input.checked = !!P[k];
+      else if (r.chipRow) r.chips.querySelectorAll('.chip').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v) === String(P[k]) ? 'true' : 'false'));
+      else { r.input.value = P[k]; r.out.textContent = r.c.fmt(+P[k]); r.input.style.setProperty('--pct', ((P[k] - r.c.min) / (r.c.max - r.c.min) * 100) + '%'); } });
+    presets.querySelectorAll('.chip').forEach((b) => { const pr = PRESETS[b.dataset.preset];
+      b.setAttribute('aria-pressed', Object.keys(pr).every((k) => Math.abs(pr[k] - P[k]) < 1e-9) ? 'true' : 'false'); });
+    field.classList.toggle('no-drag', !P.drag);
+    field.classList.toggle('show-target', !!P.showTarget); field.classList.toggle('fit', !!P.fit);
+    if (P.fit) { clearDwell(); unmark(); st.focus = -1; st.mode = 'rest'; st.hist = []; st.scrollTarget = null; }
+    $('values').value = JSON.stringify(values(), null, 2); drawOrch();
+    const keep = Object.assign({}, P); delete keep.fit; save(STORE, keep);
+    if (changed === '*' || changed === 'margin' || changed === 'fit') layout(); else kick();
+  }
+  function values() { const o = {}; ['delay','glide','speed','overshoot','edge','curve','margin','assist','assistZone','carry','dwell','centring','focusGlide','yieldAt','intro','introDelay','introScale','introMs','stagger','focusPx','h1Delay','h1Ms','h1Blur','h1Stagger','h1Unit','subDelay','subMs','subBlur','fishDelay','fishMs','open','reveal','returnHome','drag'].concat(TYPE_KEYS).forEach((k) => o[k] = P[k]); return o; }
+  $('resetBtn').addEventListener('click', () => { Object.assign(P, DEFAULTS); sync('*'); toast('Reset to your saved values'); });
+  $('copyBtn').addEventListener('click', async () => { const text = JSON.stringify(values(), null, 2), ta = $('values'), typeChanged = TYPE_KEYS.some((k) => P[k] !== DEFAULTS[k]);
+    try { await navigator.clipboard.writeText(text); ta.classList.remove('show'); toast(typeChanged ? 'Copied. Header type lives in css/work.css: paste the values to Claude to put them on the site.' : 'Copied. Paste over DEFAULTS in tools/canvas/index.template.html, then build.'); }
+    catch (e) { ta.classList.add('show'); ta.focus(); ta.select(); toast('Selected below. Press Cmd+C to copy.'); } });
+  let toastTimer = 0;
+  function toast(msg) { const t = $('toast'); t.textContent = msg; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.textContent = ''; }, 3200); }
+
+  const ui = load(STORE_UI) || {}, collapseBtn = $('collapseBtn');
+  function setCollapsed(c) { panel.classList.toggle('collapsed', c); collapseBtn.setAttribute('aria-expanded', c ? 'false' : 'true'); collapseBtn.title = c ? 'Open motion panel' : 'Close motion panel'; save(STORE_UI, { collapsed: c }); buildMap(); }
+  $('panelHead').addEventListener('click', () => setCollapsed(!panel.classList.contains('collapsed')));
+  setCollapsed(q.has('panel') ? false : ui.collapsed != null ? ui.collapsed : SIM);
+
+  addEventListener('resize', () => { if (st.open >= 0) closeCard(true); layout(); });
+  $('introBtn').addEventListener('click', playIntro);
+  layout(); sync(); if (P.intro) playIntro(); else if (hero) { rippleWords(); hero.classList.toggle('ripple', P.h1Stagger > 0); assignRipple(); hero.classList.add('still'); }
+})();
+</script>
+<script src="js/site-foot.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+/* Self-hosted PP Neue Montreal + PP Editorial Old (extracted from the Webflow export) */
+@font-face {
+  font-family: Ppneuemontreal;
+  src: url("../fonts/652b373db8dc5f55fe31fa52_PPNeueMontreal-Book-debfeb.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: Ppneuemontreal;
+  src: url("../fonts/652b373db62af154c4d7f978_PPNeueMontreal-Italic-e09749.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: Ppneuemontreal;
+  src: url("../fonts/652b373d87d36e6c66450472_PPNeueMontreal-Medium-ecbdf4.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: Ppneuemontreal;
+  src: url("../fonts/652b373dfd19962a336d649b_PPNeueMontreal-Bold-f28408.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: Ppneuemontreal;
+  src: url("../fonts/652b373de4e95fb82f10bba8_PPNeueMontreal-SemiBolditalic-d1ab1b.otf") format("opentype");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: Ppneuemontreal;
+  src: url("../fonts/652b373d222a1e9f8b131611_PPNeueMontreal-Thin-3e63ec.otf") format("opentype");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: Ppeditorialold;
+  src: url("../fonts/652b377eac2fb6a71a35ba76_PPEditorialOld-UltralightItalic-73928e.otf") format("opentype");
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: Ppeditorialold;
+  src: url("../fonts/652b377e87d36e6c66453127_PPEditorialOld-Regular-a59cb8.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: Ppeditorialold;
+  src: url("../fonts/652b377e7568770d042647f0_PPEditorialOld-Italic-85aad5.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: Ppeditorialold;
+  src: url("../fonts/652b377eb05ba5609d193624_PPEditorialOld-UltraboldItalic-12bcd5.otf") format("opentype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: Ppeditorialold;
+  src: url("../fonts/652b377e22ff746542267d0a_PPEditorialOld-Ultralight-4c91fc.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: Ppeditorialold;
+  src: url("../fonts/652b377e29f6f7d9d27b5b9b_PPEditorialOld-Ultrabold-28d1b3.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}

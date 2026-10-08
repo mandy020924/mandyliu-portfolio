@@ -1,0 +1,18 @@
+/* ===== The home header's entrance, for the other pages that open the same way (Craft, About): the heading and the subtitle blur in as blocks
+   while their lines rise into place one after another (js/hero-in.js wraps the words in span.w and numbers each by its line, --i). The Work page
+   keeps its own copy of these rules in tools/canvas/index.template.html, where its tuning panel drives the variables. ===== */
+.work-hero .hero-title { --in-blur: var(--h1-blur, 14px); } .work-hero .work-sub { --in-blur: var(--sub-blur, 14px); }
+.work-hero .hero-title, .work-hero .work-sub { opacity: 0; filter: blur(var(--in-blur, 14px)); transform: translateY(8px); will-change: opacity, filter, transform; }
+.work-hero.still .hero-title, .work-hero.still .work-sub { opacity: 1; filter: none; transform: none; }
+.work-hero.go .hero-title { animation: heroIn var(--h1-ms, 1100ms) cubic-bezier(.22, .61, .36, 1) var(--h1-delay, 150ms) both; }
+.work-hero.go .work-sub { animation: heroIn var(--sub-ms, 900ms) cubic-bezier(.22, .61, .36, 1) var(--sub-delay, 550ms) both; }
+.work-hero .hero-fish-tile { animation: none; opacity: 0; } .work-hero.still .hero-fish-tile { opacity: 1; }
+.work-hero.go .hero-fish-tile { animation: fishIn var(--fish-ms, .7s) ease-out var(--fish-delay, 1.1s) both; }
+@keyframes heroIn { 0% { opacity: 0; filter: blur(var(--in-blur, 14px)); transform: translateY(8px); } 60% { opacity: 1; filter: blur(calc(var(--in-blur, 14px) * .15)); } 100% { opacity: 1; filter: blur(0); transform: none; } }
+/* the ripple: each line rises from a fifth of its height lower, 200ms after the line before, the subtitle as the line after the heading's last */
+.work-hero.ripple .w { display: inline-block; line-height: 1; transform: translateY(.2em); will-change: transform; }
+.work-hero.ripple.still .w { transform: none; }
+.work-hero.ripple .hero-title { --base: var(--h1-delay, 150ms); --dur: var(--h1-ms, 1100ms); } .work-hero.ripple .work-sub { --base: var(--h1-delay, 150ms); --dur: var(--h1-ms, 1100ms); }
+.work-hero.ripple.go .w { animation: riseIn var(--dur) cubic-bezier(.22, .61, .36, 1) calc(var(--base) + var(--i, 0) * var(--stagger, 200ms)) both; }
+@keyframes riseIn { 0% { transform: translateY(.2em); } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .work-hero .hero-title, .work-hero .work-sub, .work-hero .hero-fish-tile, .work-hero .w { opacity: 1; filter: none; transform: none; animation: none !important; } }

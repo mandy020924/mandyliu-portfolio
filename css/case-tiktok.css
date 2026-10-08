@@ -1,0 +1,26 @@
+/* ===== TikTok Internship (Figma 294:3425): the theme, the parts only this page has. Everything else is css/case-study.css. ===== */
+:root { --theme: #3fb6b8; --grad-a: #8dccda; --grad-b: #3cb5b7; --cover-a: #a9deea; --cover-b: #3cb5b7; --hl: #d3e9ed; }
+.cover .shot-full { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }   /* the file's own render of the tile: three phones on the teal */
+/* the pillars are scroll stories (css/case-study.css, js/case-story.js): the words in a 430 column at the left, the media 910 wide at the right (the
+   file's 452 and 920, drawn in to the body measure); a pillar's second stop is its impact. Each pillar has its own ink, as in the file. */
+.case-tiktok .story { --story-text: calc(430 * var(--u)); --story-media: calc(910 * var(--u)); }
+.story .copy .big .serif { font-size: .95em; }
+.story .copy .big a { color: inherit; text-decoration: none; }
+.story .copy .big a:hover { color: var(--theme); }
+.story .copy .body { width: calc(386 * var(--u)); max-width: 100%; }
+.label.dm { color: #2bb0d1; } .label.live { color: #f62757; }
+.big46 { font-size: max(24px, calc(46 * var(--u))) !important; }
+.slot img { width: 100%; height: auto; display: block; }
+.slot .tile { overflow: hidden; }
+.slot .tile.r25 { border-radius: calc(25 * var(--u)); } .slot .tile.r22 { border-radius: calc(22 * var(--u)); } .slot .tile.r26 { border-radius: calc(26 * var(--u)); }
+.slot .fun { width: calc(420 / 909 * 100%); margin: calc(67 * var(--u)) 0 0 calc(245 / 909 * 100%); }   /* the third card, under and between the two above, as in the file */
+/* the takeaway: a label, one 46px line and the three lessons (Figma 308:34707: the shared quote card, three across the measure, numbered in TikTok's red) */
+.takeaway { margin: var(--gap) 0 0 var(--body-x); width: var(--body-w); }
+.takeaway h2 { margin: calc(14 * var(--u)) 0 0; max-width: calc(981 * var(--u)); font-weight: 500; font-size: max(24px, calc(46 * var(--u))); line-height: 1.1; letter-spacing: .01em; color: var(--ink); text-wrap: balance; }
+.takeaway .cards { margin-left: 0; }
+.takeaway .card { flex: 1 1 0; width: auto; min-width: 0; }
+.case-tiktok .card i, .case-tiktok .more .label { color: #f62757; }
+@media (max-width: 900px) {
+  .story .copy .body { width: auto; }
+  .takeaway { margin: var(--gap) 20px 0; width: auto; } .takeaway h2 { max-width: none; } .takeaway .card { flex: none; width: 100%; }
+}

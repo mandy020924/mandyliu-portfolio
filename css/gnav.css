@@ -1,0 +1,47 @@
+/* ===== Global tab bar (from Figma "Web-portfolio-2026"; 15px spec scaled to 14px) ===== */
+.gnav { --gn-pill: #ececec; --gn-ink: #000; --gn-gutter: 24px;
+  --gn-font: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Ppneuemontreal, sans-serif;
+  position: fixed; top: 13px; left: var(--gn-gutter); right: var(--gn-gutter); z-index: 1000;
+  display: flex; justify-content: space-between; align-items: center; pointer-events: none; color: var(--gn-ink); }
+.gnav a, .gnav a:hover, .gnav a:visited { color: var(--gn-ink); text-decoration: none; }
+.gnav a.is-active, .gnav a.is-active:hover { color: #fff; }
+.gnav-pill { pointer-events: auto; display: flex; align-items: center; gap: 13px; height: 44px; box-sizing: border-box;
+  padding: 8px 13px; border-radius: 50px; color: var(--gn-ink);
+  /* glass: translucent fill + backdrop blur + hairline highlight */
+  background: rgba(0, 0, 0, .05);
+  -webkit-backdrop-filter: blur(10px) saturate(1.15); backdrop-filter: blur(10px) saturate(1.15);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+.gnav-tab.is-active { box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+.gnav-tabs { position: absolute; left: 50%; transform: translateX(-50%); }
+.gnav-tab { display: flex; align-items: center; justify-content: center; height: 28px; padding: 6px 15px; box-sizing: border-box; border-radius: 22px;
+  font-family: var(--gn-font); font-weight: 500; font-size: 12px; line-height: 16px; white-space: nowrap; color: var(--gn-ink);
+  transition: background-color .2s, color .2s; }
+.gnav-tab:hover { background: rgba(255,255,255,.45); }
+.gnav-tab.is-active { background: var(--gn-ink); color: #fff; }
+.gnav-tab.is-active:hover { background: #1a1a1a; }
+.gnav-tab--tight { padding: 6px; }
+.gnav-tab--icon { width: 28px; padding: 0; justify-content: center; border-radius: 50%; margin-right: -4px; }
+.gnav-tab--icon svg { width: 17px; height: 17px; display: block; fill: currentColor; }
+.gnav-brand { gap: 2px; padding: 8px 20px 8px 17px; }
+.gnav-brand img { width: 15px; height: 14px; object-fit: cover; display: block; }
+.gnav-brand .slash { font-family: Ppneuemontreal, "PP Neue Montreal", sans-serif; font-weight: 400; font-size: 14px; line-height: 18px; letter-spacing: .2px; }
+.gnav-brand .name { font-family: Ppeditorialold, "PP Editorial Old", serif; font-style: italic; font-weight: 400; font-size: 14px; line-height: 18px; letter-spacing: .2px; }
+/* ----- Inverse ink (js/site-fx.js adds the .gnav-ink layer and .has-ink on <html>) -----
+   A blend mode cannot reach the page from inside the nav, because a fixed, z-indexed element is an isolated group. So the ink is a second fixed
+   layer of its own: white text and icons in "difference" mode, which read black over light surfaces and white over dark ones. */
+.has-ink .gnav:not(.gnav-ink), .has-ink .gnav:not(.gnav-ink) a, .has-ink .gnav:not(.gnav-ink) .gnav-pill, .has-ink .gnav:not(.gnav-ink) .gnav-tab { color: transparent; }
+.has-ink .gnav:not(.gnav-ink) .gnav-tab--icon svg { fill: transparent; }
+.has-ink .gnav:not(.gnav-ink) .gnav-brand img { opacity: 0; }
+.gnav-ink { z-index: 1001; mix-blend-mode: difference; }
+.gnav-ink, .gnav-ink * { pointer-events: none !important; }
+.gnav-ink, .gnav-ink a, .gnav-ink a.is-active, .gnav-ink .gnav-pill, .gnav-ink .gnav-tab { color: #fff; }
+.gnav-ink .gnav-pill, .gnav-ink .gnav-tab, .gnav-ink .gnav-tab.is-active { background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.gnav-ink .gnav-tab--icon svg { fill: #fff; }
+.gnav-ink .gnav-brand img { filter: invert(1); }   /* the mark is black on transparent */
+@media (max-width: 767px) {
+  .gnav { --gn-gutter: 16px; top: 8px; justify-content: center; }
+  .gnav-tabs { position: static; transform: none; height: 40px; padding: 6px 8px; gap: 4px; }
+  .gnav-tab { height: 28px; padding: 6px 12px; font-size: 12px; }
+  .gnav-tab--tight { padding: 6px 10px; }
+  .gnav-brand, .gnav-links { display: none; }
+}

@@ -1,0 +1,7 @@
+# the working files behind the site, not the site: the Work page's source and build script, the labs, the mirror of the old Webflow export
+tools
+.claude
+README.md
+.DS_Store
+**/.DS_Store
+time-machine

@@ -1,0 +1,51 @@
+:root { --foot-max-w: 1730px; --foot-vw: min(1vw, calc(var(--foot-max-w) / 100)); }   /* the drawing's unit: a hundredth of the window, stopping at the 1730px design */
+/* ===== The site footer, shared by every page (the Work page's template and the case studies get the markup from tools/canvas/build.py, the
+   behaviour from js/site-foot.js). Figma 4:39518: two layers. Behind: an ASCII drawing of Michelangelo's Creation of Adam (text node 220:56107: 248 columns x 50 rows,
+   Inconsolata SemiBold 13.934 / 12.563, #575757, spanning the frame). In front: three small texts along its bottom edge (220:56109).
+   Everything scales with the window up to the design width (values are the 1730px design divided by 1730, in --foot-vw, which stops at 1730);
+   wider windows get the 1730px drawing centred, its sides fading out. The drawing rises more slowly than the page as the footer scrolls in and
+   keeps drifting for a moment after the scroll stops (the script below moves --foot-y and --line-y). The page's bottom blur is off here so the last
+   rows reach the edge sharp. ===== */
+.site-foot { position: relative; overflow: hidden; margin-top: clamp(48px, 5.2023 * var(--vw, 1vw), 140px);       /* 90px of white space under the projects at 1730 */
+  height: calc(45.0235 * var(--foot-vw, 1vw));                                                   /* exactly the drawing's height: 62 rows (12 of dotted sky + the 50 of the drawing) x 12.563 = 778.9px at 1730 */
+  --art-ink: #adadad; --art-mid: #cbcbcb; --art-dot: #e8e8e8; }                                    /* tones of the drawing: dense characters, ':' and '-', and the background dots (two steps lighter than the file's 85/ab/d9; the step before was 9c/bd/e0) */
+/* Three layers at the bottom of the page: the drawing at the back, the page's bottom blur (z 15) over it, and the three texts (z 17) in front of the blur. */
+.foot-art-wrap { position: absolute; top: 0; bottom: 0; left: 0; right: 0; width: var(--foot-max-w, 1730px); max-width: 100%; margin: 0 auto;
+  transform: translate3d(0, var(--foot-y, 0px), 0); will-change: transform; }   /* the parallax moves this layer; it is as wide as the window up to 1730, then centred (left 0 + right 0 + auto margins: no percentage maths for Safari to get wrong) */
+@media (min-width: 1731px) { .foot-art-wrap { -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent); } }
+html.has-site-foot .pb-scrim.is-bottom { display: none; }   /* the script marks the page; the bottom blur would wash out the drawing's last rows */
+/* the cloud: a canvas over the drawing that repaints the symbols in the pointer's way, fading and drifting; the text underneath stays as it is */
+.foot-cloud { position: absolute; left: 0; top: 0; pointer-events: none; }
+/* The drawing is real, selectable text set at its design size (13.934 / 12.563). It is then scaled as one piece so that its 248 columns run exactly from
+   the left edge of the window to the right edge at any width; the script sets the two scale factors. Copying it gives the plain ASCII rows. */
+.foot-art { position: absolute; left: 0; top: 0; margin: 0; transform-origin: 0 0; transform: scale(var(--foot-kx, 1), var(--foot-ky, 1));
+  font-family: Inconsolata, ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace; font-weight: 600; font-variant-ligatures: none;
+  font-size: 13.934px; line-height: 12.563px; letter-spacing: 0; color: var(--art-ink); white-space: pre; cursor: text; -webkit-text-size-adjust: none; text-size-adjust: none; }
+.foot-art .m { color: var(--art-mid); } .foot-art .d { color: var(--art-dot); }
+.foot-art::selection, .foot-art span::selection { background: #161616; color: #fff; }
+/* The closing line (Figma 235:13930 + 425:16451): "Lets make Great things happen" centred over the drawing, with About / Linkedin / Email centred
+   under it. At 1730: the serif line is 40px with its glyphs 212px under the drawing's first row; the links are 20px SF Pro Display Medium with the
+   24px arrow glued to each word, 40px apart, their caps 82px lower. Set in the site's PP Editorial Old (the file has Editorial New). Everything
+   scales with the window; the column stays put while the drawing slides under it. */
+.foot-line { position: absolute; z-index: 2; left: var(--gutter, 30px); right: var(--gutter, 30px); top: calc(15.2753 * var(--foot-vw, 1vw)); transform: translate3d(0, var(--line-y, 0px), 0); will-change: transform;   /* the 12 rows of sky, then 113.5px into the drawing: 100px higher than the Figma's 213.5, by Mandy's eye */
+  display: flex; flex-direction: column; align-items: center; gap: calc(36px * var(--step, 1)); margin: 0; white-space: nowrap; text-align: center; }   /* the position stays in true vw: it is tied to the drawing, which fills the width; the type below steps with the header's (--step, css/work.css) */
+.foot-line .lead { font-family: Ppeditorialold, "PP Editorial Old", serif; font-weight: 400; font-size: calc(40px * var(--step, 1)); line-height: 1; color: #989898; }
+.foot-line .lead em { font-style: italic; color: #545454; }
+.foot-line .links { display: flex; align-items: center; gap: calc(40px * var(--step, 1)); font-family: var(--ui-font, "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Ppneuemontreal, sans-serif); font-weight: 500; font-size: calc(20px * var(--step, 1)); line-height: 1; color: #545454; }
+.foot-line .links a { display: inline-flex; align-items: center; color: inherit; text-decoration: none; transition: color .2s; }
+.foot-line .links a img { width: 1.2em; height: 1.2em; display: block; transition: transform .25s cubic-bezier(.22, .61, .36, 1); }   /* the 24px arrow next to 20px type, scaling with it */
+.foot-line .links a:hover { color: #161616; } .foot-line .links a:hover img { transform: translate(2px, -2px); }
+@media (max-width: 767px) { .foot-line { left: var(--gutter, 16px); right: var(--gutter, 16px); gap: 10px; } .foot-line .links { gap: 20px; } }
+/* The three texts are pinned to the bottom of the window, like the nav to the top, and use the same inverse ink: white in "difference" mode reads
+   black over the white page and white over dark covers as they pass underneath. They sit above the bottom blur (z 15). */
+.foot-row { position: fixed; z-index: 1001; left: var(--gutter, 30px); right: var(--gutter, 30px); bottom: clamp(10px, 0.9827 * var(--vw, 1vw), 26px);   /* 17px at 1730 */
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; margin: 0; pointer-events: none;
+  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Ppneuemontreal, sans-serif; font-weight: 500; font-size: 12px; line-height: 16px; color: #545454; }   /* the nav tab's type, exactly: one style for all fixed chrome */
+.foot-row > * { white-space: nowrap; pointer-events: auto; }
+.foot-row > :nth-child(2) { text-align: center; } .foot-row > :nth-child(3) { text-align: right; justify-self: end; }
+.foot-row a { color: inherit; text-decoration: none; } .foot-row a:hover { color: #161616; }
+@supports (mix-blend-mode: difference) { .foot-row { color: #fff; mix-blend-mode: difference; } .foot-row a:hover { color: #fff; opacity: .65; } }
+@media (forced-colors: active) { .foot-row { mix-blend-mode: normal; color: CanvasText; } }
+@media (max-width: 767px) { .site-foot { height: calc(45.0235 * var(--foot-vw, 1vw)); }
+  .foot-row { position: static; grid-template-columns: 1fr; gap: 0; padding: 14px var(--gutter, 16px) 22px; text-align: center; background: #fff; color: #545454; mix-blend-mode: normal; }   /* phones: in the flow, under the drawing */
+  .foot-row > :nth-child(3) { text-align: center; justify-self: center; } }
