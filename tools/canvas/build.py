@@ -72,7 +72,7 @@ print('index.html written')
 # ---------- the same footer on the other pages ----------
 # The template is the footer's source. Each page below carries <!-- site-foot:start --> ... <!-- site-foot:end --> markers; what is between
 # them is replaced with the template's footer (drawing included), its root-relative paths rewritten for the page's depth.
-FOOT_PAGES = ['work/google-internship/index.html', 'work/adobe-internship/index.html', 'work/tiktok-internship/index.html', 'visual/index.html', 'about/index.html']
+FOOT_PAGES = ['work/google-internship/index.html', 'work/hedraworld/index.html', 'work/adobe-internship/index.html', 'work/tiktok-internship/index.html', 'visual/index.html', 'about/index.html', 'work-grid/index.html']
 foot = re.search(r'<footer class="site-foot">\n.*?</footer>\n<p class="foot-row">.*?</p>', t, re.S).group(0)
 for page in FOOT_PAGES:
     depth = page.count('/'); prefix = '../' * depth

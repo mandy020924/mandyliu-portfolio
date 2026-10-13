@@ -42,11 +42,12 @@
 @keyframes cardNear { from { transform: translate3d(var(--in-x, 0px), var(--in-y, 600px), 0) scale(var(--in-k, 2)); opacity: 0; filter: blur(var(--in-focus, 10px)); } 12% { opacity: 1; } 55% { filter: blur(calc(var(--in-focus, 10px) * .3)); } to { transform: none; opacity: 1; filter: blur(0); } }
 @media (prefers-reduced-motion: reduce) { .piece.sec.near { animation: none; } }
 
-/* ---- About: one heading, centred; under it the photo at the left in the card's dress and the story at the right in the subtitle's voice ---- */
-.about-page .work-hero { text-align: center; }
-.about-page .hero-title { margin: 0 auto; max-width: 30em; text-wrap: balance; }
-.about-body { max-width: var(--canvas-max-w, 1730px); margin: clamp(72px, 9.1329 * var(--vw), 237px) auto 0; padding: 0 var(--gutter, 30px); box-sizing: border-box; --r: clamp(20px, 2.3vw, 40px);
-  display: grid; grid-template-columns: minmax(260px, 440px) minmax(0, 1fr); gap: clamp(32px, 4.5vw, 96px); align-items: start; }
+/* ---- About: one composition, centred in the window: the photo at the left in the card's dress, and beside it the heading in the home header's
+        voice with the story under it. The pair sits level with each other and in the middle of the first screen. ---- */
+.about-body { max-width: 1280px; margin: 0 auto; padding: 100px var(--gutter, 30px) 0; box-sizing: border-box; min-height: calc(100svh - 40px); --r: clamp(20px, 2.3vw, 40px);
+  display: grid; grid-template-columns: minmax(240px, 400px) minmax(0, 1fr); gap: clamp(32px, 5vw, 96px); align-items: center; align-content: center; }
+.about-page .work-hero { padding: 0; margin: 0 0 clamp(20px, 2.4vw, 36px); max-width: none; text-align: left; }
+.about-page .hero-title { margin: 0; max-width: none; text-wrap: balance; }
 .about-photo { margin: 0; border-radius: var(--r); overflow: hidden; background: #ededed; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 14.7px -1px rgba(0,0,0,.18), 0 8px 24px -8px rgba(0,0,0,.06); }
 .about-photo img { display: block; width: 100%; height: auto; }
 .about-story { max-width: 30em; font-weight: 500; font-size: calc(26px * var(--step, 1)); line-height: 1.3; color: #545454; }
@@ -60,6 +61,6 @@
 
 @media (max-width: 1023px) {
   .craft-grid { column-gap: 20px; } .piece { grid-column: 1 / -1; padding-bottom: 20px; }
-  .about-body { grid-template-columns: 1fr; gap: 36px; } .about-photo { max-width: 440px; }
+  .about-body { grid-template-columns: 1fr; gap: 36px; min-height: 0; padding-top: 110px; } .about-photo { max-width: 440px; } .about-col { display: contents; } .about-page .work-hero { order: -1; margin-bottom: 0; }
 }
-@media (max-width: 767px) { .craft, .about-body { padding: 0 20px; margin-top: 48px; } .about-story { font-size: 20px; } }
+@media (max-width: 767px) { .craft { padding: 0 20px; margin-top: 48px; } .about-body { padding: 96px 20px 0; } .about-story { font-size: 20px; } }

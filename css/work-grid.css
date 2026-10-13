@@ -1,0 +1,15 @@
+/* ===== Work grid, static: an exploration of the home page with the Craft page's packed grid in place of the sliding canvas. The covers are cut
+   to tiles of different widths (4 to 8 of 12 columns) and different shapes (--ar), packed by the same script as Craft (css/craft.css gives the
+   grid, the arrival and the banner); this sheet dresses the tiles as Work cards: the cover filling the tile, the card's shadow and lift, its
+   banner with the icon. ===== */
+.piece .tile { aspect-ratio: var(--ar, 1); background: var(--card, #ececec);
+  box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 14.7px -1px rgba(0,0,0,.18), 0 8px 24px -8px rgba(0,0,0,.06); }
+.piece .tile:hover { transform: translateY(-6px) scale(1.025);
+  box-shadow: 0 2px 4px rgba(0,0,0,.05), 0 12px 24px -4px rgba(0,0,0,.12), 0 32px 64px -8px rgba(0,0,0,.20); }
+.piece .tile img.cover { position: absolute; inset: -2px; width: calc(100% + 4px); height: calc(100% + 4px); object-fit: cover; object-position: var(--pos, 50% 50%); }
+.piece .card-blur::before { background: linear-gradient(to top, rgba(255,255,255,.2), rgba(255,255,255,0)); }
+.piece .card-row { justify-content: flex-start; align-items: center; gap: 15px; }
+.piece .tile img.card-icon { position: static; width: 46px; height: 46px; flex: none; object-fit: contain; }   /* craft.css sizes every img in a tile to its width; the icon keeps the Work card's 46px */
+.piece .card-title { font-size: 22px; line-height: 20px; white-space: nowrap; }
+.piece .card-sub { font-size: 15px; line-height: 18px; white-space: nowrap; }
+.grid-note { max-width: var(--canvas-max-w, 1730px); margin: 0 auto; padding: 0 var(--gutter, 30px); box-sizing: border-box; font-family: var(--ui-font); font-weight: 500; font-size: 12px; line-height: 16px; color: var(--sub, #989898); }

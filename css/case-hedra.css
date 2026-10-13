@@ -1,0 +1,33 @@
+/* ===== Hedra World (rebuilt from the Webflow page in the case-study system): the theme, the parts only this page has. Everything else is css/case-study.css. ===== */
+:root { --theme: #e4569c; --grad-a: #ffb3d9; --grad-b: #e4569c; --cover-a: #ffd9ec; --cover-b: #fca6d2; --hl: #ffe3f0; }
+/* the cover: the app's own composite (its pink frame baked in) on the pink of the Work card, under the Hedra icon */
+.cover .shot { position: absolute; left: 50%; top: calc(160 * var(--u)); width: calc(1160 * var(--u)); transform: translateX(-50%); filter: drop-shadow(0 calc(18 * var(--u)) calc(40 * var(--u)) rgba(120, 30, 80, .22)); }
+.cover .shot img { width: 100%; height: auto; display: block; }
+/* the creative workflow: three steps across the body measure, each a soft panel holding a dark tile with the step's picture, numbered in the theme */
+.flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: calc(24 * var(--u)); margin: calc(56 * var(--u)) 0 0 var(--body-x); width: var(--body-w); }
+.flow .step { background: var(--soft); border-radius: 20px; padding: calc(20 * var(--u)) calc(16 * var(--u)); display: flex; flex-direction: column; gap: calc(18 * var(--u)); }
+.flow .tile { position: relative; aspect-ratio: 1; border-radius: 20px; overflow: hidden; background: #0b0b0d; }
+.flow .tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.flow .step.panel .tile img { object-fit: contain; }   /* the Text to 3D panel is taller than wide: whole, on the dark */
+.flow i { font-style: normal; font-size: max(12px, calc(15 * var(--u))); letter-spacing: .01em; color: var(--theme); }
+.flow h3 { margin: 0; font-weight: 500; font-size: max(15px, calc(20 * var(--u))); line-height: 1.3; letter-spacing: .02em; color: #525252; }
+.flow p { margin: 0; font-weight: 500; font-size: max(15px, calc(20 * var(--u))); line-height: 1.25; color: var(--grey); }
+.flow .text { display: flex; flex-direction: column; gap: 6px; }
+/* the demo: the published video, served from here, in the recordings' corner radius; it plays muted when it comes into view and carries its own
+   controls for sound and scrubbing, so the Source pill sits at the top corner, clear of them; the credit is centred under the frame */
+.case-hedra .demo { background: #0b0b0d; border-radius: calc(22 * var(--u)); aspect-ratio: 16 / 9; }
+.case-hedra .demo video { display: block; }
+.case-hedra .pill { bottom: auto; top: calc(28 * var(--u)); }
+.demo-credit { margin: calc(18 * var(--u)) 0 0 var(--body-x); width: var(--body-w); text-align: center; }
+/* the two scroll stories (workspace before and after; the three core features): words in a 430 column, the recordings 910 wide in dark tiles */
+.case-hedra .story { --story-text: calc(430 * var(--u)); --story-media: calc(910 * var(--u)); }
+.story .copy .body { width: calc(386 * var(--u)); max-width: 100%; }
+.slot .tile { border-radius: calc(22 * var(--u)); overflow: hidden; background: #0b0b0d; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 14.7px -1px rgba(0,0,0,.12); }
+.slot video, .slot img { width: 100%; height: auto; display: block; }
+/* the section intros that lead into a story share the About block's dress */
+.about.intro .about-title { font-weight: 500; }
+@media (max-width: 900px) {
+  .flow { grid-template-columns: 1fr; gap: 16px; margin: 32px 20px 0; width: auto; }
+  .demo-credit { margin: 12px 20px 0; width: auto; }
+  .story .copy .body { width: auto; }
+}
