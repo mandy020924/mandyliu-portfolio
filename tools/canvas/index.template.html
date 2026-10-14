@@ -18,7 +18,7 @@
 .work-hero { z-index: 3; }   /* the fish tile hangs below the hero box and must sit above the canvas edge */
 html.leaving body { opacity: 0; transition: opacity .3s ease; }   /* leaving for a case study: the page blurs away as it fades, then the case study resolves out of a blur of its own */
 html.leaving .work-hero, html.leaving .canvas-field, html.leaving .site-foot { filter: blur(14px); transition: filter .3s ease; }
-.canvas-field { position: relative; margin-top: calc(clamp(72px, 9.1329 * var(--vw), 237px) + 5.7803 * var(--vw));   /* 158px at 1730, plus 100px more (scaled) under the taller heading */
+.canvas-field { position: relative; margin-top: -16px;   /* 24px from the fish tile to the first row of cards: the plane's own 40px lead, less 16; the subtitle row carries the room above it */
   cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; overflow-x: clip; overflow-y: visible; }
 .canvas-field.no-drag, .canvas-field.fit { cursor: default; }
 /* The project index (Figma 76:4813): the project names as pills down the left edge, level with the first row of cards, 26px in. Set at the nav
@@ -46,6 +46,14 @@ html.leaving .work-hero, html.leaving .canvas-field, html.leaving .site-foot { f
 @media (prefers-reduced-motion: reduce) { .work-index button { opacity: 1 !important; animation: none !important; } }
 @media (max-width: 899px) { .work-index { display: none; } }
 .canvas-field.dragging { cursor: grabbing; }
+/* a card with no page yet (data-soon): the pointer over it becomes a small glass label, "Coming soon", in the nav pill's dress; nothing opens */
+.work-card[data-soon] { cursor: none; }
+.soon-cursor { position: fixed; left: 0; top: 0; z-index: 1002; height: 28px; padding: 6px 15px; box-sizing: border-box; border-radius: 22px; pointer-events: none;
+  background: rgba(255, 255, 255, .62); -webkit-backdrop-filter: blur(10px) saturate(1.15); backdrop-filter: blur(10px) saturate(1.15); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .5), 0 6px 18px -8px rgba(0, 0, 0, .18);
+  font-family: var(--ui-font); font-weight: 500; font-size: 12px; line-height: 16px; color: #545454; white-space: nowrap;
+  opacity: 0; transform: translate3d(var(--x, -100px), var(--y, -100px), 0) translate(-50%, -50%) scale(.96); transition: opacity .18s ease; }
+.soon-cursor.is-on { opacity: 1; transform: translate3d(var(--x, -100px), var(--y, -100px), 0) translate(-50%, -50%); }
+@media (hover: none) { .soon-cursor { display: none; } .work-card[data-soon] { cursor: default; } }
 .canvas-field.dragging .work-card, .canvas-field.fit .work-card { pointer-events: none; }
 .work-plane { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 0 0; will-change: transform; }
 .work-plane .work-card { position: absolute; height: 500px; }
@@ -230,22 +238,21 @@ html.leaving .work-hero, html.leaving .canvas-field, html.leaving .site-foot { f
 
 <section class="work-hero">
   <h1 class="hero-title"><em class="ac">Mandy</em> is a Product designer crafting novel products out of ambiguity. Previously, she designed for <em class="ac"><span class="ac-google">Google</span>, Adobe, TikTok</em>, and start-ups and is now doing her Earned her BFA Graphic Design @ <em class="ac">RISD</em>, doing her Masters of Design @ <em class="ac">UC Berkeley</em>.</h1>
-  <p class="work-sub">Currently based in <img class="pin" src="images/figma-pin-location.svg" alt=""/> Bay Area | Graduating December 2026</p>
-  <span class="hero-fish" aria-hidden="true"><i class="hero-fish-tile"><img src="images/658a52ab40527efa984d7285_ezgif.com-resize-633a5b.gif" alt=""/></i></span>
+  <p class="work-sub">Currently based in <img class="pin" src="images/figma-pin-location.svg" alt=""/> Bay Area | Graduating December 2026<span class="hero-fish" aria-hidden="true"><i class="hero-fish-tile"><img src="images/658a52ab40527efa984d7285_ezgif.com-resize-633a5b.gif" alt=""/></i></span></p>
 </section>
 
 <section class="canvas-field" id="field" aria-label="Selected work">
   <div class="work-index-wrap"><nav class="work-index" id="workIndex" aria-label="Projects"><button type="button" data-card="google">Google</button><button type="button" data-card="adobe">Adobe</button><button type="button" data-card="tiktok">Tiktok</button><button type="button" data-card="hedra">Hedra.ai</button><button type="button" data-card="ipsos">Ipsos Facto</button><button type="button" data-card="breakfree">BreakFree</button><button type="button" data-card="knoll">Knoll Website</button><button type="button" data-card="moodorb">Mood.orb</button></nav></div>
   <div class="work-plane" id="plane">
-    <div data-href="work/google-internship/index.html" class="work-card has-cover c1 google" style="--t:#1258cc;--s:#4074ce;--x:414;--y:0;--w:453"><img class="cover" decoding="async" src="images/covers/r1c1.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/google.png" alt="Google Internship"/><div class="card-text"><p class="card-title">Google Internship</p><p class="card-sub">Gemini voice experience on home smart display</p></div></div></div></div>
-    <div data-href="work/hedraworld/index.html" class="work-card has-cover c2 hedra" style="--t:#fff3fa;--s:#ffffff;--x:907;--y:0;--w:720"><img class="cover" decoding="async" src="images/covers/r1c2.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/hedra.png" alt="Hedra.ai Creator"/><div class="card-text"><p class="card-title">Hedra.ai Creator</p><p class="card-sub">Creator’s tool  ·  Reimagine content creation & manipulation with Gen-AI</p></div></div></div></div>
-    <div data-href="work/tiktok-internship/index.html" class="work-card has-cover c3 tiktok" style="--t:#ffffff;--s:#ffffff;--x:1667;--y:0;--w:453"><img class="cover" decoding="async" src="images/covers/r1c3.png" alt=""/><div class="cover-slides" aria-hidden="true"><i class="slides-bg bg2 tt-anim"></i><i class="slides-bg bg3 tt-anim"></i><div class="slides-track tt-anim"><div class="slot"><img class="tt-anim p0" src="images/covers/tiktok/feed-1.png" alt="" decoding="async"/></div><div class="slot"><img class="tt-anim p1" src="images/covers/tiktok/feed-2.png" alt="" decoding="async"/></div><div class="slot"><img class="tt-anim p2" src="images/covers/tiktok/feed-3.png" alt="" decoding="async"/></div><div class="slot"><img class="tt-anim p3" src="images/covers/tiktok/feed-1.png" alt="" decoding="async"/></div></div></div><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/tiktok.png" alt="TikTok Internship"/><div class="card-text"><p class="card-title tt-anim tt-ink">TikTok Internship</p><p class="card-sub tt-anim tt-ink">LIVE Safety, Direct messaging, and STEM Feed</p></div></div></div></div>
-    <div data-href="work/adobe-internship/index.html" class="work-card has-cover c1 adobe" style="--t:#2224a2;--s:#4b4b9c;--x:0;--y:540;--w:720"><img class="cover" decoding="async" src="images/covers/r2c1.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/adobe.png" alt="Adobe Internship | Firefly Video Editor"/><div class="card-text"><p class="card-title">Adobe Internship | Firefly Video Editor</p><p class="card-sub">Prompt-driven video restyling inside Adobe Firefly</p></div></div></div></div>
-    <div data-href="work/mood-orb/index.html" class="work-card has-cover c2 moodorb" style="--t:#ffffff;--s:#ffffff;--x:760;--y:540;--w:554"><img class="cover" decoding="async" src="images/covers/r2c2.png" alt=""/><video class="cover-video" src="files/moodorb-hover.mp4" muted loop playsinline preload="metadata" aria-hidden="true"></video><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/moodorb.png" alt="Mood.orb"/><div class="card-text"><p class="card-title">Mood.orb</p><p class="card-sub">Mood journal connected to your physiological signals</p></div></div></div></div>
-    <div data-href="ipsos-facto/index.html" class="work-card has-cover c3 ipsos" style="--t:#ffffff;--s:#ffffff;--x:1354;--y:540;--w:720"><img class="cover" decoding="async" src="images/covers/r2c3.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/ipsos.png" alt="Ipsos Facto"/><div class="card-text"><p class="card-title">Ipsos Facto</p><p class="card-sub">B2B  ·  Prompt library for an internal research chat assistant</p></div></div></div></div>
-    <div class="work-card has-cover c1 knoll" style="--t:#555555;--s:#555555;--x:119;--y:1080;--w:733"><img class="cover" decoding="async" src="images/covers/r3c1.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/knoll.png" alt="Knoll"/><div class="card-text"><p class="card-sub">Revitalizing Knoll Research library website & design system</p></div></div></div></div>
-    <div data-href="https://mandyliu.webflow.io/work/flow" class="work-card has-cover c2 ipsos-ds" style="--t:#005758;--s:#005758;--x:892;--y:1080;--w:733"><img class="cover" decoding="async" src="images/covers/r3c2.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/ipsos-ds.png" alt="Ipsos Flow"/><div class="card-text"><p class="card-title">Ipsos Flow</p><p class="card-sub">Design system  ·  Complex enterprise resource planning platform</p></div></div></div></div>
-    <div data-href="breakfree/index.html" class="work-card has-cover c3 breakfree" style="--t:#000000;--s:#000000;--x:1665;--y:1080;--w:455"><img class="cover" decoding="async" src="images/covers/r3c3.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/breakfree.png" alt="BreakFree"/><div class="card-text"><p class="card-title">BreakFree</p><p class="card-sub">Redesign behavior training app for better market fit</p></div></div></div></div>
+    <div data-href="work/google-internship/index.html" class="work-card has-cover c1 google" style="--t:#1258cc;--s:#4074ce;--x:414;--y:0;--w:453"><img class="cover" decoding="async" src="images/covers/r1c1.png" alt=""/><span class="card-year">2026</span><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/google.png" alt="Google Internship"/><div class="card-text"><p class="card-title">Google Internship</p><p class="card-sub">Gemini voice experience on home smart display</p></div></div></div></div>
+    <div data-href="work/hedraworld/index.html" class="work-card has-cover c2 hedra" style="--t:#fff3fa;--s:#ffffff;--x:907;--y:0;--w:720"><img class="cover" decoding="async" src="images/covers/r1c2.png" alt=""/><span class="card-year">2024</span><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/hedra.png" alt="Hedra.ai Creator"/><div class="card-text"><p class="card-title">Hedra.ai Creator</p><p class="card-sub">Creator’s tool  ·  Reimagine content creation & manipulation with Gen-AI</p></div></div></div></div>
+    <div data-href="work/tiktok-internship/index.html" class="work-card has-cover c3 tiktok" style="--t:#ffffff;--s:#ffffff;--x:1667;--y:0;--w:453"><img class="cover" decoding="async" src="images/covers/r1c3.png" alt=""/><span class="card-year">2025</span><div class="cover-slides" aria-hidden="true"><i class="slides-bg bg2 tt-anim"></i><i class="slides-bg bg3 tt-anim"></i><div class="slides-track tt-anim"><div class="slot"><img class="tt-anim p0" src="images/covers/tiktok/feed-1.png" alt="" decoding="async"/></div><div class="slot"><img class="tt-anim p1" src="images/covers/tiktok/feed-2.png" alt="" decoding="async"/></div><div class="slot"><img class="tt-anim p2" src="images/covers/tiktok/feed-3.png" alt="" decoding="async"/></div><div class="slot"><img class="tt-anim p3" src="images/covers/tiktok/feed-1.png" alt="" decoding="async"/></div></div></div><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/tiktok.png" alt="TikTok Internship"/><div class="card-text"><p class="card-title tt-anim tt-ink">TikTok Internship</p><p class="card-sub tt-anim tt-ink">LIVE Safety, Direct messaging, and STEM Feed</p></div></div></div></div>
+    <div data-href="work/adobe-internship/index.html" class="work-card has-cover c1 adobe" style="--t:#2224a2;--s:#4b4b9c;--x:0;--y:540;--w:720"><img class="cover" decoding="async" src="images/covers/r2c1.png" alt=""/><span class="card-year">2025</span><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/adobe.png" alt="Adobe Internship | Firefly Video Editor"/><div class="card-text"><p class="card-title">Adobe Internship | Firefly Video Editor</p><p class="card-sub">Prompt-driven video restyling inside Adobe Firefly</p></div></div></div></div>
+    <div data-href="work/mood-orb/index.html" class="work-card has-cover c2 moodorb" style="--t:#ffffff;--s:#ffffff;--x:760;--y:540;--w:554"><img class="cover" decoding="async" src="images/covers/r2c2.png" alt=""/><span class="card-year">2023</span><video class="cover-video" src="files/moodorb-hover.mp4" muted loop playsinline preload="metadata" aria-hidden="true"></video><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/moodorb.png" alt="Mood.orb"/><div class="card-text"><p class="card-title">Mood.orb</p><p class="card-sub">Mood journal connected to your physiological signals</p></div></div></div></div>
+    <div data-href="ipsos-facto/index.html" class="work-card has-cover c3 ipsos" style="--t:#ffffff;--s:#ffffff;--x:1354;--y:540;--w:720"><img class="cover" decoding="async" src="images/covers/r2c3.png" alt=""/><span class="card-year">2024</span><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/ipsos.png" alt="Ipsos Facto"/><div class="card-text"><p class="card-title">Ipsos Facto</p><p class="card-sub">B2B  ·  Prompt library for an internal research chat assistant</p></div></div></div></div>
+    <div data-soon class="work-card has-cover c1 knoll" style="--t:#555555;--s:#555555;--x:119;--y:1080;--w:733"><img class="cover" decoding="async" src="images/covers/r3c1.png" alt=""/><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/knoll.png" alt="Knoll"/><div class="card-text"><p class="card-sub">Revitalizing Knoll Research library website & design system</p></div></div></div></div>
+    <div data-soon class="work-card has-cover c2 ipsos-ds" style="--t:#005758;--s:#005758;--x:892;--y:1080;--w:733"><img class="cover" decoding="async" src="images/covers/r3c2.png" alt=""/><span class="card-year">2024</span><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/ipsos-ds.png" alt="Ipsos Flow"/><div class="card-text"><p class="card-title">Ipsos Flow</p><p class="card-sub">Design system  ·  Complex enterprise resource planning platform</p></div></div></div></div>
+    <div data-href="breakfree/index.html" class="work-card has-cover c3 breakfree" style="--t:#000000;--s:#000000;--x:1665;--y:1080;--w:455"><img class="cover" decoding="async" src="images/covers/r3c3.png" alt=""/><span class="card-year">2023</span><div class="card-meta"><div class="card-blur"><i></i><i></i><i></i><i></i></div><div class="card-row"><img class="card-icon" src="images/icons/breakfree.png" alt="BreakFree"/><div class="card-text"><p class="card-title">BreakFree</p><p class="card-sub">Redesign behavior training app for better market fit</p></div></div></div></div>
   </div>
   <div class="target-dot" id="targetDot"></div>
 </section>
@@ -257,6 +264,8 @@ html.leaving .work-hero, html.leaving .canvas-field, html.leaving .site-foot { f
   <p id="oiSub"></p>
   <div class="oi-actions"><a class="oi-btn" id="oiLink" href="#">Read case study</a><span class="oi-soon" id="oiSoon">Case study coming soon</span><button class="oi-btn ghost" id="oiClose" type="button">Close</button></div>
 </aside>
+
+<div class="soon-cursor" id="soonCursor" aria-hidden="true">Coming soon</div>
 
 <footer class="site-foot">
   <div class="foot-art-wrap" id="footWrap"><pre class="foot-art" id="footArt" aria-label="ASCII drawing of the two hands from Michelangelo's Creation of Adam">__FOOTER_ART__</pre></div>
@@ -301,11 +310,11 @@ html.leaving .work-hero, html.leaving .canvas-field, html.leaving .site-foot { f
   const REST = 12, SETTLED = 120;                     // resting = pointer within 12px, canvas slower than 120 px/s
 
   const DEFAULTS = { delay: 0, glide: 1600, speed: 1650, overshoot: 0, edge: 45, curve: 1.65, margin: 160, assist: 700, assistZone: 26, carry: 70, dwell: 300, centring: 50, focusGlide: 1500, yieldAt: 15,
-                     intro: true, introDelay: 0, introScale: 2, introMs: 1300, stagger: 50, focusPx: 10, h1Delay: 150, h1Ms: 1100, h1Blur: 14, h1Stagger: 200, h1Unit: 'line', subDelay: 550, subMs: 900, subBlur: 14, fishDelay: 1100, fishMs: 700, open: true,
+                     intro: true, introDelay: 0, introScale: 2, introMs: 1300, stagger: 50, focusPx: 10, h1Delay: 150, h1Ms: 1100, h1Blur: 14, h1Stagger: 200, h1Unit: 'line', subDelay: 500, subMs: 900, subBlur: 14, fishDelay: 1100, fishMs: 700, open: true,
                      reveal: true, returnHome: true, drag: true, showTarget: false, fit: false,
                      // Header type, in Figma's 1730px frame (169:18982, heading revised to 46/74 at -0.75%, subtitle 26/32): heading #989898 Book, serif accents #545454, subtitle 24/32 #989898, 20px gap, 77px from the top.
                      // These are the panel's reset point only: the site takes them from css/work.css, which the panel overrides live with ?tune.
-                     heroTop: 67, h1Size: 46, h1Lh: 68, h1Track: -0.75, h1Weight: 400, h1Grey: 152, acSize: 100, acWeight: 400, acGrey: 84, subSize: 26, subLh: 32, subGap: 20, subGrey: 152, subAlpha: 100 };
+                     heroTop: 67, h1Size: 41, h1Lh: 59, h1Track: -0.25, h1Weight: 400, h1Grey: 145, acSize: 88, acWeight: 400, acGrey: 22, subSize: 18, subLh: 24, subGap: 20, subGrey: 152, subAlpha: 100 };
   const TYPE_KEYS = ['heroTop', 'h1Size', 'h1Lh', 'h1Track', 'h1Weight', 'h1Grey', 'acSize', 'acWeight', 'acGrey', 'subSize', 'subLh', 'subGap', 'subGrey', 'subAlpha'];
   const PRESETS = {
     Mandy:     { delay: 0,   glide: 1600, speed: 1650, overshoot: 0,    edge: 45, curve: 1.65, margin: 160, assist: 700,  assistZone: 26, carry: 70, dwell: 300, centring: 50, focusGlide: 1500 },
@@ -681,6 +690,7 @@ html.leaving .work-hero, html.leaving .canvas-field, html.leaving .site-foot { f
   function openCard(i) {
     if (st.open >= 0 || P.fit) return; releaseFocus(); clearDwell();
     // a card with a case study goes straight to it (the page fades for a beat); the details panel below is only for the ones without a page yet
+    if (cards[i].el.hasAttribute('data-soon')) return;                                               // no page yet: the pointer says so, there is no panel
     const page = cards[i].el.getAttribute('data-href');
     if (page && !SIM) { document.documentElement.classList.add('leaving'); setTimeout(() => { location.href = page; }, 300); return; }
     const c = cards[i], el = c.el, fb = field.getBoundingClientRect(), vw = innerWidth, vh = innerHeight, narrow = vw < 900;
@@ -736,7 +746,7 @@ html.leaving .work-hero, html.leaving .canvas-field, html.leaving .site-foot { f
       else if (n.nodeType === 1) { if (n.classList.contains('ac-google')) { mark(n, open); open = true; } else walk(n); } }); };
     if (h1El) walk(h1El);
     if (subEl) { idx = 0; Array.from(subEl.childNodes).forEach((n) => { if (n.nodeType === 3) { if (!n.textContent.trim()) { n.remove(); return; } const w = mark(document.createElement('span')); w.textContent = n.textContent.trim(); n.parentNode.replaceChild(w, n); }
-      else if (n.nodeType === 1 && !n.classList.contains('w')) { const w = mark(document.createElement('span')); n.parentNode.insertBefore(w, n); w.appendChild(n); } }); }
+      else if (n.nodeType === 1 && !n.classList.contains('w') && !n.classList.contains('hero-fish')) { const w = mark(document.createElement('span')); n.parentNode.insertBefore(w, n); w.appendChild(n); } }); }
   }
   // --i for every word: its place in the line by words, or the number of its line by lines (the subtitle being the line after the heading's last)
   function assignRipple() {
@@ -905,6 +915,16 @@ html.leaving .work-hero, html.leaving .canvas-field, html.leaving .site-foot { f
   addEventListener('resize', () => { if (st.open >= 0) closeCard(true); layout(); });
   $('introBtn').addEventListener('click', playIntro);
   layout(); sync(); if (P.intro) playIntro(); else if (hero) { rippleWords(); hero.classList.toggle('ripple', P.h1Stagger > 0); assignRipple(); hero.classList.add('still'); }
+})();
+</script>
+<script>
+(function () {
+  // the "Coming soon" pointer (css above) follows the mouse while it is over a card that has no page yet
+  var label = document.getElementById('soonCursor'), field = document.querySelector('.canvas-field'); if (!label || !field || matchMedia('(hover: none)').matches) return;
+  field.addEventListener('pointermove', function (e) { var on = e.target && e.target.closest && e.target.closest('.work-card[data-soon]');
+    if (on) { label.style.setProperty('--x', e.clientX + 'px'); label.style.setProperty('--y', e.clientY + 'px'); label.classList.add('is-on'); } else label.classList.remove('is-on'); });
+  field.addEventListener('pointerleave', function () { label.classList.remove('is-on'); });
+  addEventListener('scroll', function () { label.classList.remove('is-on'); }, { passive: true });
 })();
 </script>
 <script src="js/site-foot.js"></script>

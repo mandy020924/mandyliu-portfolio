@@ -194,6 +194,9 @@ html.leaving main.case, html.leaving .case-page .site-foot { opacity: 0; filter:
 .more-card .card-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .more-card .card-title, .more-card .card-sub { margin: 0; font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Ppneuemontreal, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .more-card .card-title { font-weight: 600; font-size: max(16px, calc(22 * var(--u))); line-height: 1; color: var(--t, #000); }
+.more-card .card-year { position: absolute; top: calc(22 * var(--u)); right: calc(25 * var(--u)); z-index: 3; font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Ppneuemontreal, sans-serif; font-weight: 500; font-size: 12px; line-height: 16px; color: var(--t, #000); opacity: 0; pointer-events: none; transition: opacity .4s ease; }   /* the year, as on the Work page's cards: only under the pointer */
+.more-card:hover .card-year { opacity: .9; }
+@media (hover: none) { .more-card .card-year { opacity: .9; } }
 .more-card .card-sub { font-weight: 500; font-size: max(12px, calc(15 * var(--u))); line-height: 1.2; color: var(--s, #000); opacity: .8; }
 @media (prefers-reduced-motion: reduce) { .more-card, .more-card:hover { transform: none; transition: none; } }
 

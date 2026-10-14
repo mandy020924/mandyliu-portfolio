@@ -13,3 +13,5 @@
 .piece .card-title { font-size: 22px; line-height: 20px; white-space: nowrap; }
 .piece .card-sub { font-size: 15px; line-height: 18px; white-space: nowrap; }
 .grid-note { max-width: var(--canvas-max-w, 1730px); margin: 0 auto; padding: 0 var(--gutter, 30px); box-sizing: border-box; font-family: var(--ui-font); font-weight: 500; font-size: 12px; line-height: 16px; color: var(--sub, #989898); }
+.piece .card-year { font-size: 12px; line-height: 16px; }   /* no canvas scale here */
+.piece .tile:hover .card-year { opacity: .9; }

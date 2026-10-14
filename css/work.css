@@ -1,5 +1,5 @@
 /* ===== Work page (from Figma "Web-portfolio-2026", frame 4:39518, 1730px design) ===== */
-:root { --ui-font: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Ppneuemontreal, sans-serif; --ink: #000; --pill: #ececec; --hero: #989898; --accent: #545454; --sub: #989898; --card: #ececec; --gutter: 30px;
+:root { --ui-font: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Ppneuemontreal, sans-serif; --ink: #000; --pill: #ececec; --hero: #919191; --accent: #161616; --sub: #989898; --card: #ececec; --gutter: 30px;
   /* The page scales with the window up to --max-w and holds there: --vw is one hundredth of the window width or of the cap, whichever is
      smaller, and every window-based measure uses it. The cap is a 27" screen (2560 wide), so a MacBook (1512 or 1728) and a 27" are filled edge to
      edge, and an ultrawide gets the 27" layout centred: the hero sits in a centred --max-w column and the card canvas (tools/canvas/
@@ -19,12 +19,16 @@ a { color: inherit; text-decoration: none; }
 /* ---- Header (Figma 169:18982: heading 44/60 #989898, italic accents #545454, subtitle 24/32 @80%, 20px gap) ---- */
 /* Every value below is a variable with the design value as its fallback. The Work page's tuning panel (?tune, "Header type" group) sets the variables
    on .work-hero to try other sizes live; without it nothing is set and the fallbacks are the site. */
-.work-hero { position: relative; z-index: 3; padding: var(--hero-top, 67px) var(--gutter) 0; max-width: var(--max-w); margin: 0 auto; box-sizing: border-box; }   /* nav bottom (13 + 44) + 10px gap; above the canvas so the fish tile is never clipped */
-.work-hero h1 { margin: 0; font-weight: var(--h1-weight, 400);   /* PP Neue Montreal Book */ color: var(--hero); letter-spacing: var(--h1-track, -0.0075em);
+.work-hero { position: relative; z-index: 3; padding: var(--hero-top, 67px) var(--gutter) 0; max-width: var(--max-w); margin: 0 auto; box-sizing: border-box;
+  /* a column of a set height: the heading at the top, the subtitle row at the foot, so the row (and the grid 24px under it) sits at the same place on
+     the Work and Craft pages whatever the heading's length. The height is the Work heading's three lines plus the designed gap and the 46px row; a
+     shorter heading leaves more air above the row, a longer one keeps the gap and pushes the row down. */
+  display: flex; flex-direction: column; align-items: stretch; min-height: calc(var(--hero-top, 67px) + 3 * var(--h1-lh, 1.439) * var(--h1-base, 41px) * var(--step, 1) + var(--sub-gap, clamp(96px, 19.54 * var(--vw), 338px)) + 46px); }   /* nav bottom (13 + 44) + 10px gap; above the canvas so the fish tile is never clipped */
+.work-hero h1 { margin: 0 0 var(--sub-gap, clamp(96px, 19.54 * var(--vw), 338px)); text-wrap: pretty; font-weight: var(--h1-weight, 400);   /* no lone word on the last line */   /* PP Neue Montreal Book */ color: var(--hero); letter-spacing: var(--h1-track, -0.0025em);
   /* 46/68 at -0.75% in the 1730px frame (Mandy's revision of Figma 169:18982's 44/60, from the tuner), stepped by --step below. One paragraph, no
      forced breaks: it wraps gutter to gutter, three or four lines at every width, the last one ending where the words end. */
-  font-size: calc(var(--h1-base, 46px) * var(--step, 1)); line-height: var(--h1-lh, 1.4783); text-wrap: pretty; }
-.work-hero h1 .ac { font-family: Ppeditorialold, "PP Editorial Old", serif; font-style: italic; font-weight: var(--ac-weight, 400); color: var(--accent); font-size: var(--ac-size, 1em); }
+  font-size: calc(var(--h1-base, 41px) * var(--step, 1)); line-height: var(--h1-lh, 1.439); text-wrap: pretty; }
+.work-hero h1 .ac { font-family: Ppeditorialold, "PP Editorial Old", serif; font-style: italic; font-weight: var(--ac-weight, 400); color: var(--accent); font-size: var(--ac-size, .88em); }
 /* accent runs use a different font/size: zero their inline line-height so only the 60px strut sets the line box. They never break across lines:
    "Google, Adobe, TikTok" and "UC Berkeley" move to the next line whole. */
 .work-hero h1 .ac { line-height: 0; white-space: nowrap; }
@@ -34,18 +38,17 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 1151px) { :root { --step: .7391; } }
 @media (max-width: 1023px) { .work-hero h1 { font-size: 32px; line-height: 44px; } }
 @media (max-width: 767px) { :root { --step: .6957; } }
-.work-sub { display: flex; align-items: center; gap: 10px; margin: calc(var(--sub-gap-base, 20px) * var(--step, 1)) 0 0; font-weight: 500; font-size: calc(var(--sub-base, 26px) * var(--step, 1)); line-height: var(--sub-lh, 1.2308); color: var(--sub); opacity: .8; }   /* 26/32, 20px gap at 1730 */
-.work-sub .pin { width: calc(var(--sub-base, 26px) * var(--step, 1)); height: calc(var(--sub-base, 26px) * var(--step, 1)); display: block; }
-/* fish tile: Figma 155:17495 sits at (1625, 428) in the 1730 frame, i.e. 28px from the right edge, 77px box holding a 68.8px tilted tile. It hangs
-   55px under the subtitle's row, which is the design's 329px from the top with three lines, and follows the heading whatever its line count. */
-.hero-fish { position: absolute; top: auto; bottom: -55px; right: 28px; width: 77px; height: 77px; display: flex; align-items: center; justify-content: center;
-  transform: scale(var(--k, 1)); transform-origin: 100% 0; }   /* 406px at 1730; --k (window / 1730) is set by the page script */
-.hero-fish-tile { display: block; width: 68.8px; height: 68.8px; box-sizing: border-box; overflow: hidden; background: #000;
-  border: 2.62px solid #fff; border-radius: 20.96px; box-shadow: 2.62px 5.24px 4.19px 0 rgba(0,0,0,.25); transform: rotate(7.35deg);
+.work-sub { display: flex; align-items: flex-end; gap: 10px;   /* the words and the fish share one bottom edge, so both sit the same distance above the grid */ margin: auto 0 0;   /* at the foot of the hero column; the gap above it is the heading\'s margin */ font-weight: 500; font-size: calc(var(--sub-base, 18px) * var(--step, 1)); line-height: var(--sub-lh, 1.3333); color: var(--sub); }   /* 18/24 at 1730, full strength */
+.work-sub .pin { width: calc(var(--sub-base, 18px) * var(--step, 1)); height: calc(var(--sub-base, 18px) * var(--step, 1)); display: block; margin-bottom: 3px; }   /* level with the x-height, as it was when centred */
+/* fish tile: a 77px box holding a 68.8px tilted tile, at the right end of the subtitle's row (it is the row's last flex item), scaled with the
+   canvas (--k, window / 1730, set by the page script). The Craft page hangs the same tile under its heading instead (css/craft.css). */
+.hero-fish { position: relative; margin-left: auto; align-self: flex-end; flex: none; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;   /* at the row's right end, the box the tile's own size: its right edge is the content's edge, its foot the row's */
+  transform: scale(var(--k, 1)); transform-origin: 100% 100%; }
+.hero-fish-tile { display: block; width: 46px; height: 46px; box-sizing: border-box; overflow: hidden; background: #000;
+  border: 0; border-radius: 4px; box-shadow: none;   /* a plain square, barely rounded, no tilt, no shadow */
   opacity: 0; filter: none; animation: fishIn .7s ease-out 1.1s both; }
 .hero-fish-tile img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.22) translate(-1%, -6%); }
 /* below 1024px the paragraph runs to four or five lines: hang the tile under the subtitle instead of at a fixed height */
-@media (max-width: 1023px) { .hero-fish { top: auto; bottom: calc(-4vw - 77px); } }
 @keyframes fishIn { 0% { opacity: 0; } 100% { opacity: 1; } }   /* opacity only: a blur filter leaves the rotated tile rasterised soft */
 @media (prefers-reduced-motion: reduce) { .hero-fish-tile { opacity: 1; animation: none !important; } }
 
@@ -89,6 +92,11 @@ a { color: inherit; text-decoration: none; }
   transition: opacity .4s ease, transform .55s cubic-bezier(.22,1,.36,1); }
 .card-title, .card-sub { margin: 0; font-family: var(--ui-font); overflow: visible; white-space: nowrap; }
 .card-title { font-weight: 600; font-size: 22px; line-height: 20px; color: var(--t); }
+/* the year in the top corner of every card: the nav tab's type at the nav's size on screen (the canvas scales its cards by --k, so the size is
+   divided back out), the card's own title colour, inset as the banner is, and only under the pointer, as the banner's words are */
+.card-year { position: absolute; top: 22px; right: 25px; z-index: 3; margin: 0; font-family: var(--ui-font); font-weight: 500; font-size: calc(12px / var(--k, 1)); line-height: calc(16px / var(--k, 1)); letter-spacing: 0; color: var(--t, #000); opacity: 0; pointer-events: none; transition: opacity .4s ease; }
+.work-card:hover .card-year, .work-card.is-hover .card-year, .work-card.is-open-card .card-year { opacity: .9; }
+@media (hover: none) { .card-year { opacity: .9; } }
 .card-sub { font-weight: 500; font-size: 15px; line-height: 18px; color: var(--s); opacity: .8; }
 .work-card:hover .card-blur::before, .work-card:hover .card-blur i, .work-card.is-hover .card-blur::before, .work-card.is-hover .card-blur i { opacity: 1; }
 .work-card:hover .card-text, .work-card.is-hover .card-text { opacity: 1; transform: translateY(0); }
@@ -98,8 +106,9 @@ a { color: inherit; text-decoration: none; }
   :root { --gutter: 16px; }
   .work-hero { padding-top: 84px; }
   .work-hero h1 { font-size: 26px; line-height: 34px; }
-  .work-sub { font-size: 15px; line-height: 22px; gap: 6px; margin-top: 12px; }
+  .work-hero { min-height: 0; } .work-hero h1 { margin-bottom: 40px; }
+  .work-sub { font-size: 15px; line-height: 22px; gap: 6px; }
   .work-sub .pin { width: 16px; height: 16px; }
-  .hero-fish { position: static; margin: 20px 0 0; width: 56px; height: 56px; transform: none; }
-  .hero-fish-tile { width: 50px; height: 50px; border-radius: 15px; border-width: 2px; }
+  .hero-fish { width: 34px; height: 34px; transform: none; }
+  .hero-fish-tile { width: 34px; height: 34px; border-radius: 4px; }
 }

@@ -17,7 +17,7 @@
     if (sub) Array.prototype.forEach.call(sub.querySelectorAll('.w'), function (w) { w.style.setProperty('--i', li + 1); }); }
   function phrases(node) { Array.prototype.slice.call(node.childNodes).forEach(function (n) {   // the subtitle is a flex row: each text run or element is one piece
     if (n.nodeType === 3) { if (!n.nodeValue.trim()) { n.parentNode.removeChild(n); return; } var w = document.createElement('span'); w.className = 'w'; w.textContent = n.nodeValue.trim(); n.parentNode.replaceChild(w, n); }
-    else if (n.nodeType === 1 && !n.classList.contains('w')) { var p = document.createElement('span'); p.className = 'w'; n.parentNode.insertBefore(p, n); p.appendChild(n); } }); }
+    else if (n.nodeType === 1 && !n.classList.contains('w') && !n.classList.contains('hero-fish')) { var p = document.createElement('span'); p.className = 'w'; n.parentNode.insertBefore(p, n); p.appendChild(n); } }); }
   if (h1) wrap(h1); if (sub) phrases(sub);
   lines(); hero.classList.add('ripple');
   if (reduce) { hero.classList.add('still'); return; }

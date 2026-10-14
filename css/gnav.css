@@ -38,6 +38,12 @@
 .gnav-ink .gnav-pill, .gnav-ink .gnav-tab, .gnav-ink .gnav-tab.is-active { background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
 .gnav-ink .gnav-tab--icon svg { fill: #fff; }
 .gnav-ink .gnav-brand img { filter: invert(1); }   /* the mark is black on transparent */
+/* the layer under the ink (js/site-fx.js): the same letters in mid grey, blended in "saturation" mode, so within each glyph the backdrop loses its
+   colour before the difference layer inverts it; over an orange cover the text reads dark grey instead of blue */
+.gnav-desat { mix-blend-mode: saturation; }
+.gnav-desat, .gnav-desat a, .gnav-desat a.is-active, .gnav-desat .gnav-pill, .gnav-desat .gnav-tab { color: #808080; }
+.gnav-desat .gnav-tab--icon svg { fill: #808080; }
+.gnav-desat .gnav-brand img { filter: invert(1) brightness(.5); }
 @media (max-width: 767px) {
   .gnav { --gn-gutter: 16px; top: 8px; justify-content: center; }
   .gnav-tabs { position: static; transform: none; height: 40px; padding: 6px 8px; gap: 4px; }

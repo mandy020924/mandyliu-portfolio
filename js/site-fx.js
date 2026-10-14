@@ -45,7 +45,8 @@
   if (gnav && window.CSS && CSS.supports && CSS.supports('mix-blend-mode', 'difference') && !matchMedia('(forced-colors: active)').matches) {
     var ink = gnav.cloneNode(true); ink.classList.add('gnav-ink'); ink.setAttribute('aria-hidden', 'true'); ink.setAttribute('inert', ''); ink.removeAttribute('aria-label');
     Array.prototype.forEach.call(ink.querySelectorAll('a'), function (a) { a.removeAttribute('href'); a.removeAttribute('target'); a.tabIndex = -1; });
-    gnav.parentNode.insertBefore(ink, gnav.nextSibling); document.documentElement.classList.add('has-ink');
+    var desat = ink.cloneNode(true); desat.classList.add('gnav-desat');   // under the ink: grey letters in "saturation" mode drain the colour behind them, so the difference above lands on grey and reads black or white, never a cover's complement
+    gnav.parentNode.insertBefore(desat, gnav.nextSibling); gnav.parentNode.insertBefore(ink, desat.nextSibling); document.documentElement.classList.add('has-ink');
   }
 
   /* 3. Hero heading: split into words and animate them in */
